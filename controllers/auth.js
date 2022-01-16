@@ -53,15 +53,12 @@ const signin = async (req, res) => {
     expiresIn: JWT_EXPIRE_DURATION,
   });
 
-  res
-    .status(200)
-    .send({
-      success: true,
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
-    });
+  res.status(200).send({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    token,
+  });
 };
 
 module.exports = {
