@@ -19,7 +19,10 @@ const signup = async (req, res) => {
     res.status(200).send({ success: true });
   } catch (e) {
     console.log(e);
-    res.status(500).send({ message: e, success: false });
+    res.status(500).send({
+      message: e?.message ?? 'Something went wrong!!',
+      success: false,
+    });
   }
 };
 
@@ -33,7 +36,10 @@ const signin = async (req, res) => {
   try {
     user = await User.findOne({ email });
   } catch (e) {
-    res.status(500).send({ message: e, success: false });
+    res.status(500).send({
+      message: e?.message ?? 'Something went wrong!!',
+      success: false,
+    });
     return;
   }
 
