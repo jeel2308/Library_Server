@@ -1,0 +1,30 @@
+{
+  "name": "Library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-datasource-mongodb": "^0.5.2",
+    "apollo-server": "^3.6.1",
+    "apollo-server-core": "^3.6.1",
+    "apollo-server-express": "^3.6.1",
+    "bcrypt": "^5.0.1",
+    "dataloader": "^2.0.0",
+    "dotenv": "^10.0.0",
+    "eslint": "^8.6.0",
+    "graphql": "^16.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongodb": "^4.3.0",
+    "mongoose": "^6.1.5"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.1"
+  }
+}
