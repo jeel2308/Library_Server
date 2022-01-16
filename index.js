@@ -6,6 +6,7 @@ const express = require('express');
 const http = require('http');
 const DataLoader = require('dataloader');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 /**--internal-- */
 const { resolvers } = require('./resolvers');
@@ -21,6 +22,15 @@ const { User, Resource } = require('./models');
 const app = express();
 
 dotEnv.config();
+
+/**
+ * This will allow request from any origin
+ */
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 /**
  * This will add JSON payload in as req.body Object
