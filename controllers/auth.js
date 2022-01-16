@@ -55,7 +55,13 @@ const signin = async (req, res) => {
 
   res
     .status(200)
-    .send({ success: true, id: user.id, email: user.email, token });
+    .send({
+      success: true,
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      token,
+    });
 };
 
 module.exports = {
