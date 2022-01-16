@@ -1,3 +1,4 @@
 const userRoutes = require('./user');
+const pingRoutes = require('./ping');
 
-module.exports = { userRoutes };
+module.exports = { userRoutes, pingRoutes };

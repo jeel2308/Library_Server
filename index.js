@@ -14,7 +14,7 @@ const { UserDataStore, ResourceDataStore } = require('./dataSource');
 const {
   getBatchLoaderFunctionForUsers,
 } = require('./dataloaderBatchFunctions');
-const { userRoutes } = require('./routes');
+const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
 const { User, Resource } = require('./models');
 
@@ -33,6 +33,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(userRoutes);
+
+app.use(pingRoutes);
 
 app.use(verifyToken);
 
@@ -54,6 +56,8 @@ const startServer = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
+    console.log('Mongodb connected');
 
     const userDataSource = new UserDataStore(User);
 
@@ -82,6 +86,8 @@ const startServer = async () => {
 
     await server.start();
 
+    console.log('Apollo server started');
+
     /**
      * Connects Apollo Server with middleware based library.
      * Basically server will be treated as middleware
@@ -89,6 +95,7 @@ const startServer = async () => {
     server.applyMiddleware({ app });
 
     await httpServer.listen({ port: 4000 });
+    console.log('Express server started');
   } catch (e) {
     console.log(e);
   }
