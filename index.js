@@ -6,6 +6,7 @@ const express = require('express');
 const http = require('http');
 const DataLoader = require('dataloader');
 const mongoose = require('mongoose');
+const { MongoDataSource } = require('apollo-datasource-mongodb');
 const cors = require('cors');
 
 /**--internal-- */
@@ -17,7 +18,7 @@ const {
 } = require('./dataloaderBatchFunctions');
 const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
-const { User, Resource } = require('./models');
+const { User, Folder, Link } = require('./models');
 
 const app = express();
 
@@ -80,6 +81,8 @@ const startServer = async () => {
         return {
           users: userDataSource,
           resources: resourceDataSource,
+          folders: new MongoDataSource(Folder),
+          links: new MongoDataSource(Link),
         };
       },
       context: () => {
