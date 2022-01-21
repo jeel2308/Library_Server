@@ -12,6 +12,24 @@ const resolvers = {
 
       return user;
     },
+    folder: async (root, args, context) => {
+      const { id } = args;
+      const {
+        dataSources: { folders },
+      } = context;
+
+      const { _doc: folder } = await folders.findOneById(id);
+      return folder;
+    },
+    link: async (root, args, context) => {
+      const { id } = args;
+      const {
+        dataSources: { links },
+      } = context;
+
+      const { _doc: link } = await links.findOneById(id);
+      return link;
+    },
     node: async (root, args, context, info) => {
       const { input } = args;
       const {
@@ -24,17 +42,18 @@ const resolvers = {
       switch (type) {
         case 'USER': {
           const user = await users.load(id);
-          return user;
+          return { ...user, type };
         }
 
         case 'FOLDER': {
-          const folder = await folders.findById(id);
-          return folder;
+          const { _doc } = await folders.findOneById(id);
+
+          return { ..._doc, type };
         }
 
         case 'LINK': {
-          const link = await links.findById(id);
-          return link;
+          const { _doc } = await links.findOneById(id);
+          return { ..._doc, type };
         }
 
         default: {
@@ -73,6 +92,7 @@ const resolvers = {
   Node: {
     __resolveType: (obj, ctx, info) => {
       const { type } = obj;
+
       switch (type) {
         case 'USER': {
           return 'User';
@@ -93,6 +113,12 @@ const resolvers = {
     },
   },
   User: {
+    id: ({ _id }) => _id,
+  },
+  Folder: {
+    id: ({ _id }) => _id,
+  },
+  Link: {
     id: ({ _id }) => _id,
   },
 };

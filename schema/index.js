@@ -47,6 +47,8 @@ const typeDefs = `
 
   type Query{
       user(id:ID!):User!
+      folder(id:ID!):Folder!
+      link(id:ID!):Link!
       node(input:NodeInput!):Node
       multiNode(input:MultiNodeInput!):[Node]!
   }
