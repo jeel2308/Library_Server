@@ -12,7 +12,7 @@ const cors = require('cors');
 /**--internal-- */
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
-const { UserDataStore, ResourceDataStore } = require('./dataSource');
+const { UserDataStore } = require('./dataSource');
 const {
   getBatchLoaderFunctionForUsers,
 } = require('./dataloaderBatchFunctions');
@@ -47,7 +47,7 @@ app.use(userRoutes);
 
 app.use(pingRoutes);
 
-app.use(verifyToken);
+// app.use(verifyToken);
 
 /**
  * Instead of using app.listen, we are creating httpServer. httpServer requires a function which
@@ -72,15 +72,12 @@ const startServer = async () => {
 
     const userDataSource = new UserDataStore(User);
 
-    const resourceDataSource = new ResourceDataStore(Resource);
-
     const server = new ApolloServer({
       typeDefs,
       resolvers,
       dataSources: () => {
         return {
           users: userDataSource,
-          resources: resourceDataSource,
           folders: new MongoDataSource(Folder),
           links: new MongoDataSource(Link),
         };

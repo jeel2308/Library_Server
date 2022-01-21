@@ -86,18 +86,11 @@ const resolvers = {
           return 'Link';
         }
 
-        case 'RESOURCE': {
-          return 'Resource';
-        }
         default: {
           return null;
         }
       }
     },
-  },
-  Resource: {
-    url: () => 'random',
-    tag: () => 'random',
   },
   User: {
     id: ({ _id }) => _id,
