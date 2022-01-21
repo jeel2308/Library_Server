@@ -16,6 +16,7 @@ const resolvers = {
       const { input } = args;
       const {
         loaders: { users },
+        dataSources: { folders, links },
       } = context;
 
       const { id, type } = input;
@@ -23,8 +24,17 @@ const resolvers = {
       switch (type) {
         case 'USER': {
           const user = await users.load(id);
-
           return user;
+        }
+
+        case 'FOLDER': {
+          const folder = await folders.findById(id);
+          return folder;
+        }
+
+        case 'LINK': {
+          const link = await links.findById(id);
+          return link;
         }
 
         default: {
@@ -32,13 +42,32 @@ const resolvers = {
         }
       }
     },
-    multiNode: (root, args) => {
+    multiNode: async (root, args, context) => {
       const {
         input: { ids, type },
       } = args;
-      return ids.map((id) => {
-        return { id, type };
-      });
+
+      const {
+        dataSources: { folders, links },
+      } = context;
+
+      switch (type) {
+        case 'FOLDER': {
+          const data = await folders.findManyByIds(ids);
+          return data;
+        }
+
+        case 'LINK': {
+          const data = await links.findManyByIds(ids);
+          return data;
+        }
+
+        default: {
+          return ids.map((id) => {
+            return { id, type };
+          });
+        }
+      }
     },
   },
   Node: {
@@ -48,6 +77,15 @@ const resolvers = {
         case 'USER': {
           return 'User';
         }
+
+        case 'FOLDER': {
+          return 'Folder';
+        }
+
+        case 'LINK': {
+          return 'Link';
+        }
+
         case 'RESOURCE': {
           return 'Resource';
         }
