@@ -3,12 +3,12 @@ const resolvers = {
   Query: {
     user: async (root, args, context, info) => {
       const {
-        loaders: { users },
+        dataSources: { users },
       } = context;
 
       const { id } = args;
 
-      const user = await users.load(id);
+      const { _doc: user } = await users.findOneById(id);
 
       return user;
     },
@@ -33,16 +33,15 @@ const resolvers = {
     node: async (root, args, context, info) => {
       const { input } = args;
       const {
-        loaders: { users },
-        dataSources: { folders, links },
+        dataSources: { folders, links, users },
       } = context;
 
       const { id, type } = input;
 
       switch (type) {
         case 'USER': {
-          const user = await users.load(id);
-          return { ...user, type };
+          const { _doc } = await users.findOneById(id);
+          return { ..._doc, type };
         }
 
         case 'FOLDER': {
@@ -67,7 +66,7 @@ const resolvers = {
       } = args;
 
       const {
-        dataSources: { folders, links },
+        dataSources: { folders, links, users },
       } = context;
 
       switch (type) {
@@ -81,10 +80,9 @@ const resolvers = {
           return data;
         }
 
-        default: {
-          return ids.map((id) => {
-            return { id, type };
-          });
+        case 'USER': {
+          const data = await users.findManyByIds(ids);
+          return data;
         }
       }
     },

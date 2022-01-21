@@ -13,9 +13,7 @@ const cors = require('cors');
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
 const { UserDataStore } = require('./dataSource');
-const {
-  getBatchLoaderFunctionForUsers,
-} = require('./dataloaderBatchFunctions');
+
 const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
 const { User, Folder, Link } = require('./models');
@@ -77,7 +75,7 @@ const startServer = async () => {
       resolvers,
       dataSources: () => {
         return {
-          users: userDataSource,
+          users: new MongoDataSource(User),
           folders: new MongoDataSource(Folder),
           links: new MongoDataSource(Link),
         };
