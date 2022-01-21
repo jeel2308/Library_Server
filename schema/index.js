@@ -8,25 +8,31 @@ const typeDefs = `
       id: ID!
       name: String!
       email: String!
-      resources:[Resource]!
+      folders:[Folder!]
   }
-
-  type Resource implements Node{
-      id: ID!
+  
+  type Link implements Node{
+      id:ID!
       url: String!
-      thumbnail: String
-      tag: String!
-      description: String
+      isCompleted: Boolean!
+  }
+  
+  type Folder implements Node{
+      id: ID!
+      name: String!
+      links: [Link!]
   }
 
   enum NodeType{
       USER
-      RESOURCE
+      FOLDER
+      LINK
   }
 
   enum MultiNodeType{
       USER
-      RESOURCE
+      FOLDER
+      LINK
   }
 
   input NodeInput{
