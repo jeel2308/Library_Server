@@ -1,4 +1,9 @@
+/**--external--*/
 const { omit, isEmpty } = require('lodash');
+
+/**--relative--*/
+const mutationResolvers = require("./mutationResolvers");
+
 const resolvers = {
   Query: {
     user: async (root, args, context, info) => {
@@ -110,6 +115,7 @@ const resolvers = {
       }
     },
   },
+  Mutation:mutationResolvers,
   User: {
     id: ({ _id }) => _id,
   },

@@ -52,6 +52,14 @@ const typeDefs = `
       node(input:NodeInput!):Node
       multiNode(input:MultiNodeInput!):[Node]!
   }
+
+  input AddFolderInput{
+      name: String!
+  }
+
+  type Mutation{
+      addFolder(input:AddFolderInput!):Folder!
+  }
 `;
 
 module.exports = { typeDefs };
