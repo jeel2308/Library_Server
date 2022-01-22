@@ -49,9 +49,10 @@ const signin = async (req, res) => {
     return;
   }
 
-  const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRE_DURATION,
-  });
+  /**
+   * Token expiration is removed for simplicity. Add it later
+   */
+  const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET);
 
   res.status(200).send({
     id: user._id,
