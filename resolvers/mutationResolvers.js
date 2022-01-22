@@ -23,6 +23,24 @@ const resolvers = {
             return {success:false,folder:null}
         }
     },
+    deleteFolder: async (_, args, context) => {
+        try {
+            const { input: { id } } = args;
+            const { dataSources: { links, folders } } = context;
+            const deleteFolderAndLinksPromise = Promise.all([folders.deleteFolder({ folderId: id }), links.deleteManyLinks({ folderId: id })]);
+            /**
+             * Here we are not returning deleted links because there is no optimal
+             * way to delete and return multiple documents in mongodb
+             */
+            const [folderQuery] = await deleteFolderAndLinksPromise;
+            const { _doc } = folderQuery;
+          
+            return {success:true,folder:_doc}
+        }
+        catch (e) {
+            return { success: false, folder: null }
+        }
+    },
     addLink: async (_, args, context) => {
         try {
             const { input:{url,folderId,isCompleted} } = args;

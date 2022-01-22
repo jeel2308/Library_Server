@@ -18,6 +18,11 @@ const typeDefs = `
       folder: Folder
   }
 
+  type DeleteFolderMutationResponse implements MutationResponse{
+      success: Boolean!
+      folder: Folder
+  } 
+
   type AddLinkMutationResponse implements MutationResponse{
       success: Boolean!
       link: Link
@@ -92,6 +97,10 @@ const typeDefs = `
       userId: String
   }
 
+  input DeleteFolderInput{
+      id:ID!
+  } 
+
   input AddLinkInput{
       url:String!
       folderId: ID!
@@ -112,6 +121,7 @@ const typeDefs = `
   type Mutation{
       addFolder(input:AddFolderInput!):AddFolderMutationResponse!
       updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
+      deleteFolder(input:DeleteFolderInput!):DeleteFolderMutationResponse!
       addLink(input:AddLinkInput!):AddLinkMutationResponse!
       updateLink(input:UpdateLinkInput!):UpdateLinkMutationResponse!
       deleteLink(input:DeleteLinkInput!):DeleteLinkMutationResponse!

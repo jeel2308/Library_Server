@@ -16,6 +16,11 @@ class FolderDataSource extends MongoDataSource {
         const res = await Folder.findOneAndUpdate({ _id: folderId }, newData,{new:true});
         return res;
     }
+    deleteFolder = async ({ folderId }) => {
+        const Folder = this.model;
+        const res = await Folder.findOneAndDelete({ _id: folderId }, { new: true });
+        return res;
+    }
 }
 
 module.exports = FolderDataSource;
