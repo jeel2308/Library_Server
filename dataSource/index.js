@@ -2,4 +2,6 @@ const { ResourceDataStore } = require('./ResourceDataStore');
 
 const { UserDataStore } = require('./UserDataStore');
 
-module.exports = { UserDataStore, ResourceDataStore };
+const FolderDataStore = require("./FolderDataStore");
+
+module.exports = { UserDataStore, ResourceDataStore,FolderDataStore };

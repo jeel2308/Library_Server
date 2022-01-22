@@ -12,7 +12,7 @@ const cors = require('cors');
 /**--internal-- */
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
-const { UserDataStore } = require('./dataSource');
+const { UserDataStore,FolderDataStore } = require('./dataSource');
 
 const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
@@ -76,7 +76,7 @@ const startServer = async () => {
       dataSources: () => {
         return {
           users: new MongoDataSource(User),
-          folders: new MongoDataSource(Folder),
+          folders: new FolderDataStore(Folder),
           links: new MongoDataSource(Link),
         };
       },
