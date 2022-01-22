@@ -1,10 +1,15 @@
 const resolvers = {
     addFolder: async (parent, args, context) => {
-        const { input:{name} } = args;
-        const { dataSources: { folders },user } = context;
-        const userId = user._id;
-        const res = await folders.addFolder({ name, userId });
-        return res;
+        try {
+            const { input: { name } } = args;
+            const { dataSources: { folders }, user } = context;
+            const userId = user._id;
+            const {_doc} = await folders.addFolder({ name, userId });
+            
+            return { folder:_doc, success: true };
+        } catch (e) {
+            return {success:false,folder:null}
+        }
     }
 }
 
