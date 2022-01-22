@@ -4,7 +4,6 @@ const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const dotEnv = require('dotenv');
 const express = require('express');
 const http = require('http');
-const DataLoader = require('dataloader');
 const mongoose = require('mongoose');
 const { MongoDataSource } = require('apollo-datasource-mongodb');
 const cors = require('cors');
@@ -12,7 +11,7 @@ const cors = require('cors');
 /**--internal-- */
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
-const { UserDataStore,FolderDataStore } = require('./dataSource');
+const { FolderDataStore, LinkDataStore } = require('./dataSource');
 
 const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
@@ -45,7 +44,7 @@ app.use(userRoutes);
 
 app.use(pingRoutes);
 
-// app.use(verifyToken);
+app.use(verifyToken);
 
 /**
  * Instead of using app.listen, we are creating httpServer. httpServer requires a function which
@@ -68,8 +67,6 @@ const startServer = async () => {
 
     console.log('Mongodb connected');
 
-    const userDataSource = new UserDataStore(User);
-
     const server = new ApolloServer({
       typeDefs,
       resolvers,
@@ -77,16 +74,12 @@ const startServer = async () => {
         return {
           users: new MongoDataSource(User),
           folders: new FolderDataStore(Folder),
-          links: new MongoDataSource(Link),
+          links: new LinkDataStore(Link),
         };
       },
-      context: () => {
+      context: ({ req }) => {
         return {
-          loaders: {
-            users: new DataLoader(
-              getBatchLoaderFunctionForUsers(userDataSource)
-            ),
-          },
+          user: req.user,
         };
       },
       plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
