@@ -6,35 +6,42 @@ const typeDefs = `
 
   interface MutationResponse{
       success: Boolean!
+      message: String
   }
 
   type AddFolderMutationResponse implements MutationResponse{
       success: Boolean!
+      message:String
       folder: Folder
   }
 
   type UpdateFolderMutationResponse implements MutationResponse{
       success: Boolean!
+      message:String
       folder: Folder
   }
 
   type DeleteFolderMutationResponse implements MutationResponse{
       success: Boolean!
+      message:String
       folder: Folder
   } 
 
   type AddLinkMutationResponse implements MutationResponse{
       success: Boolean!
+      message:String
       link: Link
   }
 
   type UpdateLinkMutationResponse implements MutationResponse{
       success: Boolean!
+      message:String
       link: Link
   }
 
   type DeleteLinkMutationResponse implements MutationResponse{
       success: Boolean!
+      message:String
       link: Link
   }
 
@@ -118,13 +125,21 @@ const typeDefs = `
       id:ID!
   }
 
-  type Mutation{
-      addFolder(input:AddFolderInput!):AddFolderMutationResponse!
-      updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
-      deleteFolder(input:DeleteFolderInput!):DeleteFolderMutationResponse!
+  type FolderMutations{
+     addFolder(input:AddFolderInput!):AddFolderMutationResponse!
+     updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
+     deleteFolder(input:DeleteFolderInput!):DeleteFolderMutationResponse!
+  }
+
+  type LinkMutations{
       addLink(input:AddLinkInput!):AddLinkMutationResponse!
       updateLink(input:UpdateLinkInput!):UpdateLinkMutationResponse!
       deleteLink(input:DeleteLinkInput!):DeleteLinkMutationResponse!
+  }
+
+  type Mutation{
+      linkManagement: LinkMutations!
+      folderManagement: FolderMutations!
   }
 `;
 

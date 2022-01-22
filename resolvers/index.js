@@ -2,7 +2,8 @@
 const { omit, isEmpty } = require('lodash');
 
 /**--relative--*/
-const mutationResolvers = require('./mutationResolvers');
+const FolderMutations = require('./FolderMutationsResolver');
+const LinkMutations = require('./LinkMutationsResolver');
 
 const resolvers = {
   Query: {
@@ -115,7 +116,10 @@ const resolvers = {
       }
     },
   },
-  Mutation: mutationResolvers,
+  Mutation: {
+    folderManagement: () => ({}),
+    linkManagement: () => ({}),
+  },
   User: {
     id: ({ _id }) => _id,
   },
@@ -125,6 +129,8 @@ const resolvers = {
   Link: {
     id: ({ _id }) => _id,
   },
+  FolderMutations,
+  LinkMutations,
 };
 
 module.exports = { resolvers };
