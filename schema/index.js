@@ -4,47 +4,6 @@ const typeDefs = `
       id:ID!
   }
 
-  interface MutationResponse{
-      success: Boolean!
-      message: String
-  }
-
-  type AddFolderMutationResponse implements MutationResponse{
-      success: Boolean!
-      message:String
-      folder: Folder
-  }
-
-  type UpdateFolderMutationResponse implements MutationResponse{
-      success: Boolean!
-      message:String
-      folder: Folder
-  }
-
-  type DeleteFolderMutationResponse implements MutationResponse{
-      success: Boolean!
-      message:String
-      folder: Folder
-  } 
-
-  type AddLinkMutationResponse implements MutationResponse{
-      success: Boolean!
-      message:String
-      link: Link
-  }
-
-  type UpdateLinkMutationResponse implements MutationResponse{
-      success: Boolean!
-      message:String
-      link: Link
-  }
-
-  type DeleteLinkMutationResponse implements MutationResponse{
-      success: Boolean!
-      message:String
-      link: Link
-  }
-
   type User implements Node{
       id: ID!
       name: String!
@@ -126,15 +85,15 @@ const typeDefs = `
   }
 
   type FolderMutations{
-     addFolder(input:AddFolderInput!):AddFolderMutationResponse!
-     updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
-     deleteFolder(input:DeleteFolderInput!):DeleteFolderMutationResponse!
+     addFolder(input:AddFolderInput!):Folder!
+     updateFolder(input:UpdateFolderInput!):Folder!
+     deleteFolder(input:DeleteFolderInput!):Folder!
   }
 
   type LinkMutations{
-      addLink(input:AddLinkInput!):AddLinkMutationResponse!
-      updateLink(input:UpdateLinkInput!):UpdateLinkMutationResponse!
-      deleteLink(input:DeleteLinkInput!):DeleteLinkMutationResponse!
+      addLink(input:AddLinkInput!):Link!
+      updateLink(input:UpdateLinkInput!):Link!
+      deleteLink(input:DeleteLinkInput!):Link!
   }
 
   type Mutation{
