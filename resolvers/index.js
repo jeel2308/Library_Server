@@ -44,27 +44,23 @@ const resolvers = {
 
       const { id, type } = input;
 
+      let data = {};
+
       switch (type) {
         case 'USER': {
-          const { _doc } = await users.findOneById(id);
-          return { ..._doc, type };
+          data = await users.findOneById(id);
         }
 
         case 'FOLDER': {
-          const { _doc } = await folders.findOneById(id);
-
-          return { ..._doc, type };
+          data = await folders.findOneById(id);
         }
 
         case 'LINK': {
-          const { _doc } = await links.findOneById(id);
-          return { ..._doc, type };
-        }
-
-        default: {
-          return input;
+          data = await links.findOneById(id);
         }
       }
+      const { _doc } = data;
+      return { ..._doc, type };
     },
     multiNode: async (root, args, context) => {
       const {
@@ -75,33 +71,26 @@ const resolvers = {
         dataSources: { folders, links, users },
       } = context;
 
+      let data = [];
+
       switch (type) {
         case 'FOLDER': {
-          const data = await folders.findManyByIds(ids);
-          return _map(data, (folder) => {
-            const { _doc } = folder;
-            return { ..._doc, type };
-          });
+          data = await folders.findManyByIds(ids);
         }
 
         case 'LINK': {
-          const data = await links.findManyByIds(ids);
-
-          return _map(data, (link) => {
-            const { _doc } = link;
-            return { ..._doc, type };
-          });
+          data = await links.findManyByIds(ids);
         }
 
         case 'USER': {
-          const data = await users.findManyByIds(ids);
-
-          return _map(data, (user) => {
-            const { _doc } = user;
-            return { ..._doc, type };
-          });
+          data = await users.findManyByIds(ids);
         }
       }
+
+      return _map(data, (item) => {
+        const { _doc } = item;
+        return { ..._doc, type };
+      });
     },
   },
   Node: {
