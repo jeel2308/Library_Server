@@ -1,5 +1,5 @@
 /**--external--*/
-const { omit, isEmpty } = require('lodash');
+const _map = require('lodash/map');
 
 /**--relative--*/
 const FolderMutations = require('./FolderMutationsResolver');
@@ -78,17 +78,28 @@ const resolvers = {
       switch (type) {
         case 'FOLDER': {
           const data = await folders.findManyByIds(ids);
-          return data;
+          return _map(data, (folder) => {
+            const { _doc } = folder;
+            return { ..._doc, type };
+          });
         }
 
         case 'LINK': {
           const data = await links.findManyByIds(ids);
-          return data;
+
+          return _map(data, (link) => {
+            const { _doc } = link;
+            return { ..._doc, type };
+          });
         }
 
         case 'USER': {
           const data = await users.findManyByIds(ids);
-          return data;
+
+          return _map(data, (user) => {
+            const { _doc } = user;
+            return { ..._doc, type };
+          });
         }
       }
     },
@@ -96,7 +107,7 @@ const resolvers = {
   Node: {
     __resolveType: (obj, ctx, info) => {
       const { type } = obj;
-
+      console.log(obj);
       switch (type) {
         case 'USER': {
           return 'User';
