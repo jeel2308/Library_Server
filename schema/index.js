@@ -18,6 +18,11 @@ const typeDefs = `
       folder: Folder
   }
 
+  type AddLinkMutationResponse implements MutationResponse{
+      success: Boolean!
+      link: Link
+  }
+
   type User implements Node{
       id: ID!
       name: String!
@@ -75,11 +80,18 @@ const typeDefs = `
       id:ID!
       name: String
       userId: String
-  } 
+  }
+
+  input AddLinkInput{
+      url:String!
+      folderId: ID!
+      isCompleted:Boolean
+  }
 
   type Mutation{
       addFolder(input:AddFolderInput!):AddFolderMutationResponse!
       updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
+      addLink(input:AddLinkInput):AddLinkMutationResponse!
   }
 `;
 

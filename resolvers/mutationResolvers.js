@@ -22,6 +22,19 @@ const resolvers = {
         catch (e) {
             return {success:false,folder:null}
         }
+    },
+    addLink: async (_, args, context) => {
+        try {
+            const { input:{url,folderId,isCompleted} } = args;
+            const { dataSources: { links } } = context;
+            const { _doc } = await links.addLink({ url, folderId, isCompleted });
+
+            return {link:_doc,success:true}
+        }
+        catch (e) {
+            console.log(e);
+            return {success:false,link:null}
+        }
     }
 }
 
