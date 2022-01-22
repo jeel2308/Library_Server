@@ -26,7 +26,12 @@ const typeDefs = `
   type UpdateLinkMutationResponse implements MutationResponse{
       success: Boolean!
       link: Link
-  } 
+  }
+
+  type DeleteLinkMutationResponse implements MutationResponse{
+      success: Boolean!
+      link: Link
+  }
 
   type User implements Node{
       id: ID!
@@ -100,11 +105,16 @@ const typeDefs = `
       id: ID! 
   }
 
+  input DeleteLinkInput{
+      id:ID!
+  }
+
   type Mutation{
       addFolder(input:AddFolderInput!):AddFolderMutationResponse!
       updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
       addLink(input:AddLinkInput!):AddLinkMutationResponse!
       updateLink(input:UpdateLinkInput!):UpdateLinkMutationResponse!
+      deleteLink(input:DeleteLinkInput!):DeleteLinkMutationResponse!
   }
 `;
 

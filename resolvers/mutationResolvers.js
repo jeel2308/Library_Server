@@ -48,6 +48,18 @@ const resolvers = {
             console.log(e);
             return {success:false,link:null}
         }
+    },
+    deleteLink: async (_, args, context) => {
+        try {
+            const { input: { id } } = args;
+            const { dataSources: { links } } = context;
+            const { _doc } = await links.deleteLink({ linkId: id });
+            return {success:true,link:_doc}
+        }
+        catch (e) {
+            console.log(e);
+            return {success:false,link:null}
+        }
     }
 }
 
