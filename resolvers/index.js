@@ -2,7 +2,7 @@
 const { omit, isEmpty } = require('lodash');
 
 /**--relative--*/
-const mutationResolvers = require("./mutationResolvers");
+const mutationResolvers = require('./mutationResolvers');
 
 const resolvers = {
   Query: {
@@ -115,7 +115,7 @@ const resolvers = {
       }
     },
   },
-  Mutation:mutationResolvers,
+  Mutation: mutationResolvers,
   User: {
     id: ({ _id }) => _id,
   },
