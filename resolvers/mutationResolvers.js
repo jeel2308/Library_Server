@@ -35,6 +35,19 @@ const resolvers = {
             console.log(e);
             return {success:false,link:null}
         }
+    },
+    updateLink: async (_, args, context) => {
+        try {
+            const { input } = args;
+            const { dataSources: { links } } = context;
+            const { _doc } = await links.updateLink(input);
+
+            return {link:_doc,success:true}
+        }
+        catch (e) {
+            console.log(e);
+            return {success:false,link:null}
+        }
     }
 }
 
