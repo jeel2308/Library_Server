@@ -10,6 +10,18 @@ const resolvers = {
         } catch (e) {
             return {success:false,folder:null}
         }
+    },
+    updateFolder: async (_, args, context) => {
+        try {
+            const { input } = args;
+            const { dataSources: { folders } } = context;
+            const { _doc} = await folders.updateFolder(input);
+            
+            return {folder:_doc,success:true}
+        }
+        catch (e) {
+            return {success:false,folder:null}
+        }
     }
 }
 

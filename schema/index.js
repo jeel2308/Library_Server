@@ -13,6 +13,11 @@ const typeDefs = `
       folder: Folder
   }
 
+  type UpdateFolderMutationResponse implements MutationResponse{
+      success: Boolean!
+      folder: Folder
+  }
+
   type User implements Node{
       id: ID!
       name: String!
@@ -66,8 +71,15 @@ const typeDefs = `
       name: String!
   }
 
+  input UpdateFolderInput{
+      id:ID!
+      name: String
+      userId: String
+  } 
+
   type Mutation{
       addFolder(input:AddFolderInput!):AddFolderMutationResponse!
+      updateFolder(input:UpdateFolderInput!):UpdateFolderMutationResponse!
   }
 `;
 
