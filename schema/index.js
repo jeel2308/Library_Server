@@ -45,14 +45,6 @@ const typeDefs = `
       type: MultiNodeType!
   }
 
-  type Query{
-      user(id:ID!):User!
-      folder(id:ID!):Folder!
-      link(id:ID!):Link!
-      node(input:NodeInput!):Node
-      multiNode(input:MultiNodeInput!):[Node]!
-  }
-
   input AddFolderInput{
       name: String!
   }
@@ -94,6 +86,14 @@ const typeDefs = `
       addLink(input:AddLinkInput!):Link!
       updateLink(input:UpdateLinkInput!):Link!
       deleteLink(input:DeleteLinkInput!):Link!
+  }
+
+   type Query{
+      user(id:ID!):User!
+      folder(id:ID!):Folder!
+      link(id:ID!):Link!
+      node(input:NodeInput!):Node
+      multiNode(input:MultiNodeInput!):[Node]!
   }
 
   type Mutation{
