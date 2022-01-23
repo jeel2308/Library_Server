@@ -7,7 +7,7 @@ const LinkMutations = require('./LinkMutationsResolver');
 
 const resolvers = {
   Query: {
-    user: async (root, context, info) => {
+    user: async (root, _, context, info) => {
       const {
         dataSources: { users },
         user: userData,
@@ -131,9 +131,9 @@ const resolvers = {
 
       const id = userData._id;
 
-      const folders = await folders.findByFields({ userId: id });
+      const res = await folders.findByFields({ userId: id });
 
-      return _map(folders, ({ _doc }) => _doc);
+      return _map(res, ({ _doc }) => _doc);
     },
   },
   Folder: {
