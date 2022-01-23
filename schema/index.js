@@ -89,7 +89,7 @@ const typeDefs = `
   }
 
    type Query{
-      user(id:ID!):User!
+      user:User!
       folder(id:ID!):Folder!
       link(id:ID!):Link!
       node(input:NodeInput!):Node

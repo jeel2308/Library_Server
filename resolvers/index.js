@@ -7,12 +7,13 @@ const LinkMutations = require('./LinkMutationsResolver');
 
 const resolvers = {
   Query: {
-    user: async (root, args, context, info) => {
+    user: async (root, context, info) => {
       const {
         dataSources: { users },
+        user: userData,
       } = context;
 
-      const { id } = args;
+      const id = userData._id;
 
       const { _doc: user } = await users.findOneById(id);
 
@@ -122,6 +123,18 @@ const resolvers = {
   },
   User: {
     id: ({ _id }) => _id,
+    folders: async (parent, _, context) => {
+      const {
+        dataSources: { folders },
+        user: userData,
+      } = context;
+
+      const id = userData._id;
+
+      const folders = await folders.findByFields({ userId: id });
+
+      return _map(folders, ({ _doc }) => _doc);
+    },
   },
   Folder: {
     id: ({ _id }) => _id,
