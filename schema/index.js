@@ -89,9 +89,6 @@ const typeDefs = `
   }
 
    type Query{
-      user:User!
-      folder(id:ID!):Folder!
-      link(id:ID!):Link!
       node(input:NodeInput!):Node
       multiNode(input:MultiNodeInput!):[Node]!
   }
