@@ -20,10 +20,12 @@ const resolvers = {
       switch (type) {
         case 'USER': {
           data = await users.findOneById(id);
+          break;
         }
 
         case 'FOLDER': {
           data = await folders.findOneById(id);
+          break;
         }
 
         case 'LINK': {
@@ -47,10 +49,12 @@ const resolvers = {
       switch (type) {
         case 'FOLDER': {
           data = await folders.findManyByIds(ids);
+          break;
         }
 
         case 'LINK': {
           data = await links.findManyByIds(ids);
+          break;
         }
 
         case 'USER': {
@@ -98,7 +102,7 @@ const resolvers = {
         dataSources: { folders },
       } = context;
 
-      const id = args.id;
+      const id = parent._id;
 
       const res = await folders.findByFields({ userId: id });
 
