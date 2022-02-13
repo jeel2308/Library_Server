@@ -71,7 +71,7 @@ const resolvers = {
   Node: {
     __resolveType: (obj, ctx, info) => {
       const { type } = obj;
-      console.log(obj);
+
       switch (type) {
         case 'USER': {
           return 'User';
