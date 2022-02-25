@@ -20,7 +20,7 @@ const typeDefs = `
   type Folder implements Node{
       id: ID!
       name: String!
-      links: [Link!]
+      links(input:FolderLinkFilters): [Link!]
   }
 
   enum NodeType{
@@ -74,6 +74,10 @@ const typeDefs = `
 
   input DeleteLinkInput{
       id:ID!
+  }
+
+  input FolderLinkFilters{
+      isCompleted: Boolean!
   }
 
   type FolderMutations{

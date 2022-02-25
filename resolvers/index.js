@@ -111,6 +111,20 @@ const resolvers = {
   },
   Folder: {
     id: ({ _id }) => _id,
+    links: async (parent, args, context) => {
+      const {
+        dataSources: { links },
+      } = context;
+
+      const id = parent._id;
+
+      const res = await links.findLinks({
+        folderId: id,
+        ...(args?.input ?? {}),
+      });
+
+      return _map(res, ({ _doc }) => _doc);
+    },
   },
   Link: {
     id: ({ _id }) => _id,
