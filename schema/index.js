@@ -89,7 +89,7 @@ const typeDefs = `
   type LinkMutations{
       addLink(input:AddLinkInput!):Link!
       updateLink(input:[UpdateLinkInput!]!):[Link!]!
-      deleteLink(input:DeleteLinkInput!):Link!
+      deleteLink(input:[DeleteLinkInput!]!):[Link!]!
   }
 
    type Query{

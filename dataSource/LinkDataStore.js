@@ -28,10 +28,23 @@ class LinkDataStore extends MongoDataSource {
 
     return result;
   };
-  deleteLink = async ({ linkId }) => {
+  deleteLink = async (payload) => {
     const Link = this.model;
-    const res = await Link.findOneAndDelete({ _id: linkId }, { new: true });
-    return res;
+    const linkIds = _map(payload, ({ id }) => id);
+
+    const result = await this.model.find({ _id: { $in: linkIds } });
+
+    const bulkWritePayload = _map(linkIds, (id) => {
+      return {
+        deleteOne: {
+          filter: { _id: id },
+        },
+      };
+    });
+
+    await Link.bulkWrite(bulkWritePayload);
+
+    return result;
   };
   deleteManyLinks = async (payload) => {
     const Link = this.model;

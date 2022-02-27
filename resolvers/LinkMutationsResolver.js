@@ -22,15 +22,13 @@ const LinkMutations = {
     return result;
   },
   deleteLink: async (_, args, context) => {
-    const {
-      input: { id },
-    } = args;
+    const { input: inputArray } = args;
     const {
       dataSources: { links },
     } = context;
-    const { _doc } = await links.deleteLink({ linkId: id });
+    const result = await links.deleteLink(inputArray);
 
-    return _doc;
+    return result;
   },
 };
 
