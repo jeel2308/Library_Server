@@ -1,5 +1,6 @@
-const { MongoDataSource } = require('apollo-datasource-mongodb');
+const _map = require('lodash/map');
 
+const { MongoDataSource } = require('apollo-datasource-mongodb');
 class LinkDataStore extends MongoDataSource {
   addLink = async ({ url, folderId, isCompleted = false }) => {
     const Link = this.model;
@@ -9,12 +10,23 @@ class LinkDataStore extends MongoDataSource {
     return res;
   };
   updateLink = async (payload) => {
-    const { id, ...newData } = payload;
     const Link = this.model;
-    const res = await Link.findOneAndUpdate({ _id: id }, newData, {
-      new: true,
+    const linkIds = _map(payload, ({ id }) => id);
+
+    const bulkWritePayload = _map(payload, ({ id, ...newData }) => {
+      return {
+        updateOne: {
+          filter: { _id: id },
+          update: newData,
+        },
+      };
     });
-    return res;
+
+    await Link.bulkWrite(bulkWritePayload);
+
+    const result = this.model.find({ _id: { $in: [linkIds] } });
+
+    return result;
   };
   deleteLink = async ({ linkId }) => {
     const Link = this.model;

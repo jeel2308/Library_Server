@@ -88,7 +88,7 @@ const typeDefs = `
 
   type LinkMutations{
       addLink(input:AddLinkInput!):Link!
-      updateLink(input:UpdateLinkInput!):Link!
+      updateLink(input:[UpdateLinkInput!]!):[Link!]!
       deleteLink(input:DeleteLinkInput!):Link!
   }
 

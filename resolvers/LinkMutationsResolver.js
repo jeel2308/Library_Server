@@ -12,14 +12,14 @@ const LinkMutations = {
     return _doc;
   },
   updateLink: async (_, args, context) => {
-    const { input } = args;
+    const { input: inputArray } = args;
     const {
       dataSources: { links },
     } = context;
 
-    const { _doc } = await links.updateLink(input);
+    const result = await links.updateLink(inputArray);
 
-    return _doc;
+    return result;
   },
   deleteLink: async (_, args, context) => {
     const {
