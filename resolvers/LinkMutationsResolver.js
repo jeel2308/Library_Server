@@ -1,3 +1,5 @@
+const _map = require('lodash/map');
+
 const LinkMutations = {
   addLink: async (_, args, context) => {
     const {
@@ -19,7 +21,7 @@ const LinkMutations = {
 
     const result = await links.updateLink(inputArray);
 
-    return result;
+    return _map(result, ({ _doc }) => _doc);
   },
   deleteLink: async (_, args, context) => {
     const { input: inputArray } = args;
@@ -28,7 +30,9 @@ const LinkMutations = {
     } = context;
     const result = await links.deleteLink(inputArray);
 
-    return result;
+    return _map(result, ({ _doc }) => {
+      return _doc;
+    });
   },
 };
 
