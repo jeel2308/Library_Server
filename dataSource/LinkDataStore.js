@@ -24,7 +24,7 @@ class LinkDataStore extends MongoDataSource {
 
     await Link.bulkWrite(bulkWritePayload);
 
-    const result = this.findManyByIds(linkIds);
+    const result = await this.findManyByIds(linkIds);
 
     return result;
   };
@@ -32,7 +32,7 @@ class LinkDataStore extends MongoDataSource {
     const Link = this.model;
     const linkIds = _map(payload, ({ id }) => id);
 
-    const result = this.findManyByIds(linkIds);
+    const result = await this.findManyByIds(linkIds);
 
     const bulkWritePayload = _map(linkIds, (id) => {
       return {
