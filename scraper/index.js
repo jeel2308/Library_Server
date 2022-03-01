@@ -10,7 +10,8 @@ const metascraper = require('metascraper')([
 const getMetadata = async ({ url }) => {
   const { body: html } = await got(url);
   const metadata = await metascraper({ html, url });
-  return _pick(metadata, ['url', 'description', 'image']);
+  const updatedMetadata = { ...metadata, thumbnail: metadata.image };
+  return _pick(updatedMetadata, ['title', 'description', 'thumbnail']);
 };
 
 module.exports = { getMetadata };
