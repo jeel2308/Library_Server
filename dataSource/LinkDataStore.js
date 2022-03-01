@@ -1,8 +1,10 @@
 const _map = require('lodash/map');
+const _omit = require('lodash/omit');
 
 const { MongoDataSource } = require('apollo-datasource-mongodb');
 
 const { getMetadata } = require('../scraper');
+const { ObjectId } = require('mongodb');
 class LinkDataStore extends MongoDataSource {
   addLink = async ({ url, folderId, isCompleted = false }) => {
     const Link = this.model;
@@ -55,6 +57,7 @@ class LinkDataStore extends MongoDataSource {
   };
   findLinks = async (payload) => {
     const Link = this.model;
+    console.log({ oldPayload: payload });
     const res = await Link.find(payload);
     return res;
   };
@@ -83,6 +86,36 @@ class LinkDataStore extends MongoDataSource {
     const result = await this.findManyByIds(linkIds);
 
     return _map(result, ({ _doc }) => _doc);
+  };
+  findLinksV2 = async (payload) => {
+    const { folderId, filters } = payload;
+    const Link = this.model;
+    const { first } = filters;
+    const updatedFilters = { folderId, ..._omit(filters, ['after', 'first']) };
+
+    if (filters.after) {
+      updatedFilters._id = { $lt: ObjectId(filters.after) };
+    }
+
+    let query = Link.find(updatedFilters).sort({ _id: 'desc' });
+
+    if (first) {
+      query = query.limit(first);
+    }
+
+    const response = await query;
+    return _map(response, ({ _doc }) => _doc);
+  };
+  getTotalLinks = async (payload) => {
+    const Link = this.model;
+    const totalLinks = await Link.count(payload);
+    return totalLinks;
+  };
+  getNextLinkPresenceStatus = async (payload) => {
+    const { linkId } = payload;
+    const Link = this.model;
+    const nextLink = await Link.exists({ _id: { $lt: ObjectId(linkId) } });
+    return !!nextLink;
   };
 }
 

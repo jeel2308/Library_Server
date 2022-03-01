@@ -19,11 +19,34 @@ const typeDefs = `
       description: String
       thumbnail: String
   }
+
+  type LinkEdge{
+      node: Link!
+      cursor: String!
+  }
+
+  type PageInfo{
+      hasNextPage: Boolean!
+      endCursor: String
+  }
+
+  type LinkWrapper{
+      totalCount: Int!
+      edges:[LinkEdge!]
+      pageInfo: PageInfo!
+  }
   
+  input FolderLinkFiltersV2{
+      isCompleted:Boolean
+      first:Int
+      after:String
+  }
+
   type Folder implements Node{
       id: ID!
       name: String!
       links(input:FolderLinkFilters): [Link!]
+      linksV2(input:FolderLinkFiltersV2):LinkWrapper!
   }
 
   enum NodeType{
