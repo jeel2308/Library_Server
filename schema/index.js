@@ -15,6 +15,9 @@ const typeDefs = `
       id:ID!
       url: String!
       isCompleted: Boolean!
+      title: String
+      description: String
+      thumbnail: String
   }
   
   type Folder implements Node{
@@ -76,6 +79,11 @@ const typeDefs = `
       id:ID!
   }
 
+  input UpdateLinkMetadataInput{
+      url:String!
+      id: ID!
+  }
+
   input FolderLinkFilters{
       isCompleted: Boolean!
   }
@@ -90,6 +98,7 @@ const typeDefs = `
       addLink(input:AddLinkInput!):Link!
       updateLink(input:[UpdateLinkInput!]!):[Link!]!
       deleteLink(input:[DeleteLinkInput!]!):[Link!]!
+      updateLinksMetadata(input:[UpdateLinkMetadataInput!]!):[Link!]!
   }
 
    type Query{

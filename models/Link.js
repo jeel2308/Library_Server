@@ -14,6 +14,15 @@ const LinkSchema = new Schema({
     type: String,
     required: true,
   },
+  title: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
+  thumbnail: {
+    type: String,
+  },
 });
 
 const Link = mongoose.model('link', LinkSchema);

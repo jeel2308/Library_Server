@@ -34,6 +34,14 @@ const LinkMutations = {
       return _doc;
     });
   },
+  updateLinksMetadata: async (_, args, context) => {
+    const { input: inputArray } = args;
+    const {
+      dataSources: { links },
+    } = context;
+    const result = await links.updateLinksMetadata(inputArray);
+    return result;
+  },
 };
 
 module.exports = LinkMutations;

@@ -1,6 +1,8 @@
 const _map = require('lodash/map');
 
 const { MongoDataSource } = require('apollo-datasource-mongodb');
+
+const { getMetadata } = require('../scraper');
 class LinkDataStore extends MongoDataSource {
   addLink = async ({ url, folderId, isCompleted = false }) => {
     const Link = this.model;
@@ -55,6 +57,32 @@ class LinkDataStore extends MongoDataSource {
     const Link = this.model;
     const res = await Link.find(payload);
     return res;
+  };
+  updateLinksMetadata = async (payload) => {
+    const linkIds = _map(payload, ({ id }) => id);
+
+    const metadataPromises = _map(payload, ({ url }) => {
+      return getMetadata({ url });
+    });
+
+    const metadataList = await Promise.all(metadataPromises);
+
+    const Link = this.model;
+
+    const bulkWritePayload = _map(payload, ({ id }, index) => {
+      return {
+        updateOne: {
+          filter: { _id: id },
+          update: metadataList[index],
+        },
+      };
+    });
+
+    await Link.bulkWrite(bulkWritePayload);
+
+    const result = await this.findManyByIds(linkIds);
+
+    return _map(result, ({ _doc }) => _doc);
   };
 }
 
