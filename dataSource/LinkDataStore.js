@@ -104,6 +104,7 @@ class LinkDataStore extends MongoDataSource {
     }
 
     const response = await query;
+
     return _map(response, ({ _doc }) => _doc);
   };
   getTotalLinks = async (payload) => {
@@ -112,10 +113,16 @@ class LinkDataStore extends MongoDataSource {
     return totalLinks;
   };
   getNextLinkPresenceStatus = async (payload) => {
-    const { linkId } = payload;
+    const { linkId, folderId, isCompleted } = payload;
     const Link = this.model;
-    const nextLink = await Link.exists({ _id: { $lt: ObjectId(linkId) } });
-    return !!nextLink;
+
+    const nextLink = await Link.exists({
+      _id: { $lt: ObjectId(linkId) },
+      isCompleted,
+      folderId,
+    });
+
+    return nextLink;
   };
 }
 

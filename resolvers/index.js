@@ -175,7 +175,7 @@ const resolvers = {
       });
     },
     pageInfo: async (parent, _, context) => {
-      const { edges } = parent;
+      const { edges, filters, folderId } = parent;
       if (_isEmpty(edges)) {
         return { endCursor: null, hasNextPage: false };
       }
@@ -185,8 +185,16 @@ const resolvers = {
       const {
         dataSources: { links },
       } = context;
+
+      const { isCompleted } = filters;
+      const shouldConsiderStatusFilter = !(
+        isCompleted == undefined || isCompleted == null
+      );
+
       const hasNextPage = await links.getNextLinkPresenceStatus({
         linkId: lastLinkId,
+        folderId,
+        ...(shouldConsiderStatusFilter ? { isCompleted } : {}),
       });
 
       return { endCursor, hasNextPage };
