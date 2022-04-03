@@ -10,6 +10,7 @@ const { encodeToBase64, decodeFromBase64 } = require('../utils');
 /**--relative--*/
 const FolderMutations = require('./FolderMutationsResolver');
 const LinkMutations = require('./LinkMutationsResolver');
+const UserMutations = require('./UserMutationsResolver');
 
 const resolvers = {
   Query: {
@@ -100,6 +101,7 @@ const resolvers = {
   Mutation: {
     folderManagement: () => ({}),
     linkManagement: () => ({}),
+    userManagement: () => ({}),
   },
   User: {
     id: ({ _id }) => _id,
@@ -202,6 +204,7 @@ const resolvers = {
   },
   FolderMutations,
   LinkMutations,
+  UserMutations,
 };
 
 module.exports = { resolvers };

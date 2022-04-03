@@ -5,13 +5,16 @@ const dotEnv = require('dotenv');
 const express = require('express');
 const http = require('http');
 const mongoose = require('mongoose');
-const { MongoDataSource } = require('apollo-datasource-mongodb');
 const cors = require('cors');
 
 /**--internal-- */
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
-const { FolderDataStore, LinkDataStore } = require('./dataSource');
+const {
+  FolderDataStore,
+  LinkDataStore,
+  UserDataStore,
+} = require('./dataSource');
 
 const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
@@ -72,7 +75,7 @@ const startServer = async () => {
       resolvers,
       dataSources: () => {
         return {
-          users: new MongoDataSource(User),
+          users: new UserDataStore(User),
           folders: new FolderDataStore(Folder),
           links: new LinkDataStore(Link),
         };

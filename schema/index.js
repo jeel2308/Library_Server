@@ -111,6 +111,12 @@ const typeDefs = `
       isCompleted: Boolean!
   }
 
+  input UpdateUserInput{
+      id:ID!
+      name:String
+      email:String
+  }
+
   type FolderMutations{
      addFolder(input:AddFolderInput!):Folder!
      updateFolder(input:UpdateFolderInput!):Folder!
@@ -124,6 +130,10 @@ const typeDefs = `
       updateLinksMetadata(input:[UpdateLinkMetadataInput!]!):[Link!]!
   }
 
+  type UserMutations{
+      updateUser(input:UpdateUserInput!):User!
+  }
+
    type Query{
       node(input:NodeInput!):Node
       multiNode(input:MultiNodeInput!):[Node]!
@@ -132,6 +142,7 @@ const typeDefs = `
   type Mutation{
       linkManagement: LinkMutations!
       folderManagement: FolderMutations!
+      userManagement: UserMutations!
   }
 `;
 
