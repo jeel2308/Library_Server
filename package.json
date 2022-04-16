@@ -28,7 +28,8 @@
     "metascraper-image": "^5.25.8",
     "metascraper-title": "^5.25.8",
     "mongodb": "^4.3.0",
-    "mongoose": "^6.1.5"
+    "mongoose": "^6.1.5",
+    "nodemailer": "^6.7.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.15",
