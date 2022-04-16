@@ -21,6 +21,10 @@ const UserSchema = new Schema({
   profileUrl: {
     type: String,
   },
+  showResetPasswordFlow: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = mongoose.model('user', UserSchema);
