@@ -1,9 +1,11 @@
 /**--external-- */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const _isEmpty = require('lodash/isEmpty');
 
 /**--internal-- */
 const { User } = require('../models');
+const callService = require('../services');
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -62,7 +64,52 @@ const signin = async (req, res) => {
   });
 };
 
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  let user = null;
+
+  try {
+    user = await User.findOne({ email });
+    if (_isEmpty(user)) {
+      res.status(200).send({ message: 'User does not exist' });
+      return;
+    }
+
+    const newPassword = callService({
+      type: 'RESET_PASSWORD',
+      data: { length: 10 },
+    });
+
+    await User.findOneAndUpdate(
+      { email },
+      {
+        password: bcrypt.hashSync(newPassword, 8),
+        showResetPasswordFlow: true,
+      },
+      { new: true }
+    );
+
+    await callService({
+      type: 'SEND_EMAIL_FROM_GMAIL',
+      data: {
+        to: email,
+        subject: 'Reset password',
+        body: `<p>We have received request for resetting your password.</p>
+        <p>Your temporary password is <b>${newPassword}</b></p>
+        <p>Sign in with this password and change your password</p> 
+        `,
+      },
+    });
+
+    res.status(200).send({ message: 'email sent' });
+  } catch (e) {
+    res.status(500).send({ message: e.message });
+  }
+};
+
 module.exports = {
   signin,
   signup,
+  resetPassword,
 };
