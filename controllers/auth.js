@@ -97,7 +97,7 @@ const resetPassword = async (req, res) => {
         subject: 'Reset password',
         body: `<p>We have received request for resetting your password.</p>
         <p>Your temporary password is <b>${newPassword}</b></p>
-        <p>Sign in with this password and change your password</p> 
+        <p>Sign in with this password and set your new password</p> 
         `,
       },
     });
