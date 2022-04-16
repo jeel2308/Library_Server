@@ -15,6 +15,7 @@ const {
   LinkDataStore,
   UserDataStore,
 } = require('./dataSource');
+const initMailTransporter = require('./mailTransporters');
 
 const { userRoutes, pingRoutes } = require('./routes');
 const { verifyToken } = require('./middleware');
@@ -23,6 +24,8 @@ const { User, Folder, Link } = require('./models');
 const app = express();
 
 dotEnv.config();
+
+initMailTransporter();
 
 /**
  * This will allow request from any origin
