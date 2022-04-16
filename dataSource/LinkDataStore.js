@@ -1,5 +1,6 @@
 const _map = require('lodash/map');
 const _omit = require('lodash/omit');
+const _isUndefined = require('lodash/isUndefined');
 
 const { MongoDataSource } = require('apollo-datasource-mongodb');
 
@@ -90,16 +91,29 @@ class LinkDataStore extends MongoDataSource {
   findLinksV2 = async (payload) => {
     const { folderId, filters } = payload;
     const Link = this.model;
-    const { first } = filters;
-    const updatedFilters = { folderId, ..._omit(filters, ['after', 'first']) };
+    const { first, searchText, after, isCompleted } = filters;
+    const updatedFilters = {
+      folderId,
+    };
 
-    if (filters.after) {
-      updatedFilters._id = { $lt: ObjectId(filters.after) };
+    if (!_isUndefined(isCompleted)) {
+      updatedFilters.isCompleted = isCompleted;
+    }
+
+    if (!_isUndefined(searchText)) {
+      updatedFilters.$or = [
+        { title: { $regex: searchText, $options: 'i' } },
+        { url: { $regex: searchText, $options: 'i' } },
+      ];
+    }
+
+    if (!_isUndefined(after)) {
+      updatedFilters._id = { $lt: ObjectId(after) };
     }
 
     let query = Link.find(updatedFilters).sort({ _id: 'desc' });
 
-    if (first) {
+    if (!_isUndefined(first)) {
       query = query.limit(first);
     }
 

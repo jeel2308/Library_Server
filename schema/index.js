@@ -40,6 +40,7 @@ const typeDefs = `
       isCompleted:Boolean
       first:Int
       after:String
+      searchText:String
   }
 
   type Folder implements Node{
