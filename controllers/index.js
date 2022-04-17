@@ -1,3 +1,3 @@
-const { signin, signup, resetPassword } = require('./auth');
+const { signin, signup, resetPassword, changePassword } = require('./auth');
 
-module.exports = { signin, signup, resetPassword };
+module.exports = { signin, signup, resetPassword, changePassword };

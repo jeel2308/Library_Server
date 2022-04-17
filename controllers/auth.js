@@ -51,6 +51,15 @@ const signin = async (req, res) => {
     return;
   }
 
+  if (user.showResetPasswordFlow) {
+    res.status(200).send({
+      id: user._id,
+      showResetPasswordFlow: user.showResetPasswordFlow,
+    });
+
+    return;
+  }
+
   /**
    * Token expiration is removed for simplicity. Add it later
    */
@@ -108,8 +117,34 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const { id: userId, password } = req.body;
+
+  try {
+    const user = await User.find({ _id: userId });
+
+    if (_isEmpty(user)) {
+      res.status(404).send({ message: 'User does not exist!' });
+      return;
+    }
+
+    const encryptedPassword = bcrypt.hashSync(password, 8);
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { password: encryptedPassword },
+      { new: true }
+    );
+
+    res.status(200).send({ message: `Updated password` });
+  } catch (e) {
+    res.status(500).send({ message: e.message });
+  }
+};
+
 module.exports = {
   signin,
   signup,
   resetPassword,
+  changePassword,
 };
