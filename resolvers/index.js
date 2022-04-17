@@ -188,15 +188,10 @@ const resolvers = {
         dataSources: { links },
       } = context;
 
-      const { isCompleted } = filters;
-      const shouldConsiderStatusFilter = !(
-        isCompleted == undefined || isCompleted == null
-      );
-
       const hasNextPage = await links.getNextLinkPresenceStatus({
         linkId: lastLinkId,
         folderId,
-        ...(shouldConsiderStatusFilter ? { isCompleted } : {}),
+        ...filters,
       });
 
       return { endCursor, hasNextPage };

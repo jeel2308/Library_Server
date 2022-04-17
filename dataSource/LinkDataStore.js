@@ -123,18 +123,39 @@ class LinkDataStore extends MongoDataSource {
   };
   getTotalLinks = async (payload) => {
     const Link = this.model;
-    const totalLinks = await Link.count(payload);
+
+    const updatedFilters = _omit(payload, ['searchText']);
+
+    const { searchText } = payload;
+
+    if (!_isUndefined(searchText)) {
+      updatedFilters.$or = [
+        { title: { $regex: searchText, $options: 'i' } },
+        { url: { $regex: searchText, $options: 'i' } },
+      ];
+    }
+
+    const totalLinks = await Link.count(updatedFilters);
     return totalLinks;
   };
   getNextLinkPresenceStatus = async (payload) => {
-    const { linkId, folderId, isCompleted } = payload;
+    const { linkId, folderId, isCompleted, searchText } = payload;
     const Link = this.model;
 
-    const nextLink = await Link.exists({
-      _id: { $lt: ObjectId(linkId) },
-      isCompleted,
-      folderId,
-    });
+    const updatedFilters = { _id: { $lt: ObjectId(linkId) }, folderId };
+
+    if (!_isUndefined(isCompleted)) {
+      updatedFilters.isCompleted = isCompleted;
+    }
+
+    if (!_isUndefined(searchText)) {
+      updatedFilters.$or = [
+        { title: { $regex: searchText, $options: 'i' } },
+        { url: { $regex: searchText, $options: 'i' } },
+      ];
+    }
+
+    const nextLink = await Link.exists(updatedFilters);
 
     return nextLink;
   };
