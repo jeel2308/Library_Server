@@ -20,7 +20,7 @@ const verifyToken = async (req, res, next) => {
     try {
       decodedUser = jwt.verify(token, JWT_SECRET);
     } catch (e) {
-      res.status(401).send({ success: false, message: 'Invalid token' });
+      res.status(401).send({ message: 'Invalid token' });
       return;
     }
 
@@ -29,12 +29,12 @@ const verifyToken = async (req, res, next) => {
     try {
       user = await User.findOne({ _id: decodedUser.id });
     } catch (e) {
-      res.status(500).send({ success: false, message: 'Server error' });
+      res.status(500).send({ message: e.message });
       return;
     }
 
     if (isEmpty(user)) {
-      res.status(401).send({ success: false, message: 'User not found' });
+      res.status(404).send({ message: 'User does not exist!' });
       return;
     }
 
@@ -42,7 +42,7 @@ const verifyToken = async (req, res, next) => {
     next();
     return;
   } else {
-    res.status(401).send({ success: false, message: 'User not found' });
+    res.status(401).send({ message: 'Authorization headers are missing' });
     return;
   }
 };
