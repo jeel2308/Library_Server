@@ -130,13 +130,23 @@ const changePassword = async (req, res) => {
 
     const encryptedPassword = bcrypt.hashSync(password, 8);
 
-    await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       { password: encryptedPassword, showResetPasswordFlow: false },
       { new: true }
     );
 
-    res.status(200).send({ message: `Updated password` });
+    const token = jwt.sign(
+      { id: updatedUser._id, email: updatedUser.email },
+      JWT_SECRET
+    );
+
+    res.status(200).send({
+      id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      token,
+    });
   } catch (e) {
     res.status(500).send({ message: e.message });
   }
