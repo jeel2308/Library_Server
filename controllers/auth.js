@@ -132,7 +132,7 @@ const changePassword = async (req, res) => {
 
     await User.findOneAndUpdate(
       { _id: userId },
-      { password: encryptedPassword },
+      { password: encryptedPassword, showResetPasswordFlow: false },
       { new: true }
     );
 
