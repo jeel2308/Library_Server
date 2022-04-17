@@ -85,7 +85,7 @@ const resetPassword = async (req, res) => {
     }
 
     const newPassword = callService({
-      type: 'RESET_PASSWORD',
+      type: 'GENERATE_PASSWORD',
       data: { length: 10 },
     });
 

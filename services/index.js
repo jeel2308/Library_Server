@@ -4,7 +4,7 @@ const { sendGmail } = require('./emailGenerator');
 
 const callService = ({ type, data }) => {
   switch (type) {
-    case 'RESET_PASSWORD': {
+    case 'GENERATE_PASSWORD': {
       return generatePassword(data);
     }
     case 'SEND_EMAIL_FROM_GMAIL': {
