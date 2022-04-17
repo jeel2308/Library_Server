@@ -80,7 +80,7 @@ const resetPassword = async (req, res) => {
   try {
     user = await User.findOne({ email });
     if (_isEmpty(user)) {
-      res.status(200).send({ message: 'User does not exist!' });
+      res.status(404).send({ message: 'User does not exist!' });
       return;
     }
 
