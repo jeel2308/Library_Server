@@ -118,6 +118,8 @@ const resetPassword = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
+  const { JWT_SECRET } = process.env;
+
   const { id: userId, password } = req.body;
 
   try {
