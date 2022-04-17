@@ -62,7 +62,7 @@ const signin = async (req, res) => {
   /**
    * Token expiration is removed for simplicity. Add it later
    */
-  const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET);
+  const token = jwt.sign({ id: user._id }, JWT_SECRET);
 
   res.status(200).send({
     id: user._id,
@@ -137,10 +137,7 @@ const changePassword = async (req, res) => {
       { new: true }
     );
 
-    const token = jwt.sign(
-      { id: updatedUser._id, email: updatedUser.email },
-      JWT_SECRET
-    );
+    const token = jwt.sign({ id: updatedUser._id }, JWT_SECRET);
 
     res.status(200).send({
       id: updatedUser._id,
