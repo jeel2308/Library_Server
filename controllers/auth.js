@@ -20,8 +20,7 @@ const signup = async (req, res) => {
     await user.save();
     res.status(200).send();
   } catch (e) {
-    console.log(e);
-    res.status(500).send({});
+    res.status(500).send({ message: e.message });
   }
 };
 
@@ -35,19 +34,19 @@ const signin = async (req, res) => {
   try {
     user = await User.findOne({ email });
   } catch (e) {
-    res.status(500).send({});
+    res.status(500).send({ message: e.message });
     return;
   }
 
   if (!user) {
-    res.status(404).send({ message: 'User not found', success: false });
+    res.status(404).send({ message: 'User does not exist' });
     return;
   }
 
   const isValidPassword = bcrypt.compareSync(password, user.password);
 
   if (!isValidPassword) {
-    res.status(500).send({ message: 'Incorrect password', success: false });
+    res.status(500).send({ message: 'Incorrect password' });
     return;
   }
 
@@ -81,7 +80,7 @@ const resetPassword = async (req, res) => {
   try {
     user = await User.findOne({ email });
     if (_isEmpty(user)) {
-      res.status(200).send({ message: 'User does not exist' });
+      res.status(200).send({ message: 'User does not exist!' });
       return;
     }
 
