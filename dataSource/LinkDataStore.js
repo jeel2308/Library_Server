@@ -1,6 +1,9 @@
 const _map = require('lodash/map');
 const _omit = require('lodash/omit');
+const _filter = require('lodash/filter');
+const _reduce = require('lodash/reduce');
 const _isUndefined = require('lodash/isUndefined');
+const _has = require('lodash/has');
 
 const { MongoDataSource } = require('apollo-datasource-mongodb');
 
@@ -10,15 +13,33 @@ class LinkDataStore extends MongoDataSource {
   addLink = async ({ url, folderId, isCompleted = false }) => {
     const Link = this.model;
 
-    const linkDocument = new Link({ url, folderId, isCompleted });
+    const metadata = await getMetadata({ url });
+    const linkDocument = new Link({ url, folderId, isCompleted, ...metadata });
     const res = await linkDocument.save();
     return res;
   };
   updateLink = async (payload) => {
     const Link = this.model;
-    const linkIds = _map(payload, ({ id }) => id);
 
-    const bulkWritePayload = _map(payload, ({ id, ...newData }) => {
+    const linksWithUpdatedUrls = _filter(payload, (link) => _has(link, 'url'));
+    const metaDataPromises = _map(linksWithUpdatedUrls, ({ url }) =>
+      getMetadata({ url })
+    );
+    const linksMetadata = await Promise.all(metaDataPromises);
+    const metadataById = _reduce(
+      linksWithUpdatedUrls,
+      (result, { id }, index) => {
+        return { ...result, [id]: linksMetadata[index] };
+      },
+      {}
+    );
+    const updatedPayload = _map(payload, ({ id, ...otherData }) => {
+      if (metadataById[id]) {
+        return { id, ...otherData, ...metadataById[id] };
+      }
+      return { id, ...otherData };
+    });
+    const bulkWritePayload = _map(updatedPayload, ({ id, ...newData }) => {
       return {
         updateOne: {
           filter: { _id: id },
@@ -26,11 +47,10 @@ class LinkDataStore extends MongoDataSource {
         },
       };
     });
-
     await Link.bulkWrite(bulkWritePayload);
 
+    const linkIds = _map(payload, ({ id }) => id);
     const result = await this.findManyByIds(linkIds);
-
     return result;
   };
   deleteLink = async (payload) => {

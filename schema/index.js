@@ -128,7 +128,7 @@ const typeDefs = `
       addLink(input:AddLinkInput!):Link!
       updateLink(input:[UpdateLinkInput!]!):[Link!]!
       deleteLink(input:[DeleteLinkInput!]!):[Link!]!
-      updateLinksMetadata(input:[UpdateLinkMetadataInput!]!):[Link!]!
+      updateLinksMetadata(input:[UpdateLinkMetadataInput!]!):[Link!]! @deprecated(reason: "addLink and updateLink will handle updating metadata")
   }
 
   type UserMutations{
