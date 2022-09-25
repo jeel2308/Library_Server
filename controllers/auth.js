@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
+const fetch = require('node-fetch');
 
 /**--internal-- */
 const { User } = require('../models');
@@ -29,7 +30,7 @@ const signup = async (req, res) => {
 
 const localSignIn = async (req, res) => {
   const { email, password } = req.body;
-  const { JWT_SECRET, JWT_EXPIRE_DURATION } = process.env;
+  const { JWT_SECRET } = process.env;
 
   let user = undefined;
 
@@ -106,6 +107,42 @@ const googleSignIn = async (req, res) => {
   }
 };
 
+const microsoftSignIn = async (req, res) => {
+  const { idToken } = req.body;
+  const { MICROSOFT_USER_DETAILS_URL, JWT_SECRET } = process.env;
+
+  try {
+    const profileDetailsJson = await fetch(MICROSOFT_USER_DETAILS_URL, {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    const { userPrincipalName: email, displayName: name } =
+      await profileDetailsJson.json();
+
+    let user = await User.findOne({ email });
+    if (_isEmpty(user)) {
+      user = new User({
+        name,
+        email,
+      });
+      await user.save();
+    }
+    const token = jwt.sign({ id: user._id }, JWT_SECRET);
+
+    res.status(200).send({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      token,
+    });
+  } catch (e) {
+    res.status(500).send({ message: e.message });
+    return;
+  }
+};
+
 const signin = async (req, res) => {
   const { method } = req.body;
 
@@ -116,6 +153,11 @@ const signin = async (req, res) => {
     }
     case 'google': {
       await googleSignIn(req, res);
+      break;
+    }
+    case 'microsoft': {
+      await microsoftSignIn(req, res);
+      break;
     }
   }
 };

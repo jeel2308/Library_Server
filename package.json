@@ -29,6 +29,7 @@
     "metascraper-title": "^5.25.8",
     "mongodb": "^4.3.0",
     "mongoose": "^6.1.5",
+    "node-fetch": "2",
     "nodemailer": "^6.7.3"
   },
   "devDependencies": {
