@@ -19,6 +19,7 @@
     "dataloader": "^2.0.0",
     "dotenv": "^10.0.0",
     "eslint": "^8.6.0",
+    "google-auth-library": "^8.5.2",
     "got": "11.8.1",
     "graphql": "^16.2.0",
     "jsonwebtoken": "^8.5.1",

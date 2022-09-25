@@ -2,10 +2,13 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
+const { OAuth2Client } = require('google-auth-library');
 
 /**--internal-- */
 const { User } = require('../models');
 const callService = require('../services');
+
+const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -24,12 +27,11 @@ const signup = async (req, res) => {
   }
 };
 
-const signin = async (req, res) => {
+const localSignIn = async (req, res) => {
+  const { email, password } = req.body;
   const { JWT_SECRET, JWT_EXPIRE_DURATION } = process.env;
 
   let user = undefined;
-
-  const { email, password } = req.body;
 
   try {
     user = await User.findOne({ email });
@@ -70,6 +72,52 @@ const signin = async (req, res) => {
     email: user.email,
     token,
   });
+};
+
+const googleSignIn = async (req, res) => {
+  const { idToken } = req.body;
+  const { JWT_SECRET, GOOGLE_CLIENT_ID } = process.env;
+
+  try {
+    const loginTicket = await googleAuthClient.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const { name, email } = loginTicket.getPayload();
+    let user = await User.findOne({ email });
+    if (_isEmpty(user)) {
+      user = new User({
+        name,
+        email,
+      });
+      await user.save();
+    }
+    const token = jwt.sign({ id: user._id }, JWT_SECRET);
+
+    res.status(200).send({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      token,
+    });
+  } catch (e) {
+    res.status(500).send({ message: e.message });
+    return;
+  }
+};
+
+const signin = async (req, res) => {
+  const { method } = req.body;
+
+  switch (method) {
+    case 'local': {
+      await localSignIn(req, res);
+      break;
+    }
+    case 'google': {
+      await googleSignIn(req, res);
+    }
+  }
 };
 
 const resetPassword = async (req, res) => {
