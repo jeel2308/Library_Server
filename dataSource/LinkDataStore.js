@@ -177,7 +177,7 @@ class LinkDataStore extends MongoDataSource {
 
     const nextLink = await Link.exists(updatedFilters);
 
-    return nextLink;
+    return !!nextLink;
   };
 }
 
