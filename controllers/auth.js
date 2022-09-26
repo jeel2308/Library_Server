@@ -107,6 +107,8 @@ const googleSignIn = async (req, res) => {
   }
 };
 
+//IMPORTANT
+//Add logic to validate token and avoid network call using id token. Update payload in FE as well. Use jwt.verify for it
 const microsoftSignIn = async (req, res) => {
   const { idToken } = req.body;
   const { MICROSOFT_USER_DETAILS_URL, JWT_SECRET } = process.env;
