@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
-const fetch = require('node-fetch');
 
 /**--internal-- */
 const { User } = require('../models');
