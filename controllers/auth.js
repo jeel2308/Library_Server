@@ -107,21 +107,13 @@ const googleSignIn = async (req, res) => {
   }
 };
 
-//IMPORTANT
-//Add logic to validate token and avoid network call using id token. Update payload in FE as well. Use jwt.verify for it
+//No need to verify token for SPA
 const microsoftSignIn = async (req, res) => {
   const { idToken } = req.body;
-  const { MICROSOFT_USER_DETAILS_URL, JWT_SECRET } = process.env;
+  const { JWT_SECRET } = process.env;
 
   try {
-    const profileDetailsJson = await fetch(MICROSOFT_USER_DETAILS_URL, {
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    const { userPrincipalName: email, displayName: name } =
-      await profileDetailsJson.json();
+    const { preferred_username: email, name } = jwt.decode(idToken);
 
     let user = await User.findOne({ email });
     if (_isEmpty(user)) {
