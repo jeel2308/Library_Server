@@ -26,9 +26,15 @@ const signup = async (req, res) => {
       email,
       password: bcrypt.hashSync(password, 8),
     });
-
     await user.save();
-    res.status(200).send();
+    const jwt = generateJwt({ user });
+
+    res.status(200).send({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      token: jwt,
+    });
   } catch (e) {
     res.status(500).send({ message: e.message });
   }
