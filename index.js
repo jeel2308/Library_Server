@@ -60,7 +60,7 @@ app.use(verifyToken);
  */
 const httpServer = http.createServer(app);
 
-const { PASSWORD, DB } = process.env;
+const { PASSWORD, DB, PORT } = process.env;
 
 const DB_URL = `mongodb+srv://Jeel2308:${PASSWORD}@cluster0.erkx1.mongodb.net/${DB}?retryWrites=true&w=majority`;
 
@@ -101,7 +101,7 @@ const startServer = async () => {
      */
     server.applyMiddleware({ app });
 
-    await httpServer.listen({ port: 4000 });
+    await httpServer.listen({ port: PORT });
     console.log('Express server started');
   } catch (e) {
     console.log(e);
