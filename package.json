@@ -37,5 +37,8 @@
     "eslint": "^8.24.0",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1"
+  },
+  "engines": {
+    "node": "16.9.0"
   }
 }
