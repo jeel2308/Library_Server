@@ -98,8 +98,7 @@ const startServer = async () => {
     console.log('Apollo server started');
 
     /**
-     * Connects Apollo Server with middleware based library.
-     * Basically server will be treated as middleware
+     * Internally, it registers route middleware for /graphql route on app.
      */
     server.applyMiddleware({ app });
 
