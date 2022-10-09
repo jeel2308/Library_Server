@@ -4,9 +4,10 @@ const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
 
-/**--internal-- */
+/**--relative-- */
 const { User } = require('../models');
 const callService = require('../services');
+const { generateJwt } = require('../utils');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -35,7 +36,6 @@ const signup = async (req, res) => {
 
 const localSignIn = async (req, res) => {
   const { email, password } = req.body;
-  const { JWT_SECRET } = process.env;
 
   let user = undefined;
 
@@ -70,7 +70,7 @@ const localSignIn = async (req, res) => {
   /**
    * Token expiration is removed for simplicity. Add it later
    */
-  const token = jwt.sign({ id: user._id }, JWT_SECRET);
+  const token = generateJwt({ user });
 
   res.status(200).send({
     id: user._id,
@@ -82,7 +82,7 @@ const localSignIn = async (req, res) => {
 
 const googleSignIn = async (req, res) => {
   const { idToken } = req.body;
-  const { JWT_SECRET, GOOGLE_CLIENT_ID } = process.env;
+  const { GOOGLE_CLIENT_ID } = process.env;
 
   try {
     const loginTicket = await googleAuthClient.verifyIdToken({
@@ -98,7 +98,7 @@ const googleSignIn = async (req, res) => {
       });
       await user.save();
     }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET);
+    const token = generateJwt({ user });
 
     res.status(200).send({
       id: user._id,
@@ -115,7 +115,6 @@ const googleSignIn = async (req, res) => {
 //No need to verify token for SPA
 const microsoftSignIn = async (req, res) => {
   const { idToken } = req.body;
-  const { JWT_SECRET } = process.env;
 
   try {
     const { preferred_username: email, name } = jwt.decode(idToken);
@@ -128,7 +127,7 @@ const microsoftSignIn = async (req, res) => {
       });
       await user.save();
     }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET);
+    const token = generateJwt({ user });
 
     res.status(200).send({
       id: user._id,
@@ -206,8 +205,6 @@ const resetPassword = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
-  const { JWT_SECRET } = process.env;
-
   const { id: userId, password } = req.body;
 
   try {
@@ -226,7 +223,7 @@ const changePassword = async (req, res) => {
       { new: true }
     );
 
-    const token = jwt.sign({ id: updatedUser._id }, JWT_SECRET);
+    const token = generateJwt({ user: updatedUser });
 
     res.status(200).send({
       id: updatedUser._id,
