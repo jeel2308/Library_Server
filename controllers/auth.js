@@ -13,13 +13,19 @@ const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
-  const user = new User({
-    name,
-    email,
-    password: bcrypt.hashSync(password, 8),
-  });
-
   try {
+    const oldUser = await User.findOne({ email });
+    if (oldUser) {
+      res.status(500).send({ message: 'User already exists!!' });
+      return;
+    }
+
+    const user = new User({
+      name,
+      email,
+      password: bcrypt.hashSync(password, 8),
+    });
+
     await user.save();
     res.status(200).send();
   } catch (e) {
