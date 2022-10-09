@@ -11,14 +11,13 @@ const { generateJwt } = require('../utils');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
     const oldUser = await User.findOne({ email });
     if (oldUser) {
-      res.status(500).send({ message: 'User already exists!!' });
-      return;
+      return next({ statusCode: 500, message: 'User already exists!!' });
     }
 
     const user = new User({
@@ -36,11 +35,11 @@ const signup = async (req, res) => {
       token: jwt,
     });
   } catch (e) {
-    res.status(500).send({ message: e.message });
+    return next({ statusCode: 500, message: e.message });
   }
 };
 
-const localSignIn = async (req, res) => {
+const localSignIn = async (req, res, next) => {
   const { email, password } = req.body;
 
   let user = undefined;
@@ -48,20 +47,17 @@ const localSignIn = async (req, res) => {
   try {
     user = await User.findOne({ email });
   } catch (e) {
-    res.status(500).send({ message: e.message });
-    return;
+    return next({ statusCode: 500, message: e.message });
   }
 
   if (!user) {
-    res.status(404).send({ message: 'User does not exist' });
-    return;
+    return next({ statusCode: 404, message: 'User does not exist' });
   }
 
   const isValidPassword = bcrypt.compareSync(password, user.password);
 
   if (!isValidPassword) {
-    res.status(500).send({ message: 'Incorrect password' });
-    return;
+    return next({ statusCode: 500, message: 'Incorrect password' });
   }
 
   if (user.showResetPasswordFlow) {
@@ -86,7 +82,7 @@ const localSignIn = async (req, res) => {
   });
 };
 
-const googleSignIn = async (req, res) => {
+const googleSignIn = async (req, res, next) => {
   const { idToken } = req.body;
   const { GOOGLE_CLIENT_ID } = process.env;
 
@@ -113,13 +109,12 @@ const googleSignIn = async (req, res) => {
       token,
     });
   } catch (e) {
-    res.status(500).send({ message: e.message });
-    return;
+    return next({ statusCode: 500, message: e.message });
   }
 };
 
 //No need to verify token for SPA
-const microsoftSignIn = async (req, res) => {
+const microsoftSignIn = async (req, res, next) => {
   const { idToken } = req.body;
 
   try {
@@ -142,8 +137,7 @@ const microsoftSignIn = async (req, res) => {
       token,
     });
   } catch (e) {
-    res.status(500).send({ message: e.message });
-    return;
+    return next({ statusCode: 500, message: e.message });
   }
 };
 
@@ -166,7 +160,7 @@ const signin = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
   const { email } = req.body;
 
   let user = null;
@@ -174,8 +168,7 @@ const resetPassword = async (req, res) => {
   try {
     user = await User.findOne({ email });
     if (_isEmpty(user)) {
-      res.status(404).send({ message: 'User does not exist!' });
-      return;
+      return next({ statusCode: 404, message: 'User does not exist!' });
     }
 
     const newPassword = callService({
@@ -206,19 +199,18 @@ const resetPassword = async (req, res) => {
 
     res.status(200).send({ message: 'email sent' });
   } catch (e) {
-    res.status(500).send({ message: e.message });
+    return next({ statusCode: 500, message: e.message });
   }
 };
 
-const changePassword = async (req, res) => {
+const changePassword = async (req, res, next) => {
   const { id: userId, password } = req.body;
 
   try {
     const user = await User.find({ _id: userId });
 
     if (_isEmpty(user)) {
-      res.status(404).send({ message: 'User does not exist!' });
-      return;
+      return next({ statusCode: 404, message: 'User does not exist!' });
     }
 
     const encryptedPassword = bcrypt.hashSync(password, 8);
@@ -238,7 +230,7 @@ const changePassword = async (req, res) => {
       token,
     });
   } catch (e) {
-    res.status(500).send({ message: e.message });
+    return next({ statusCode: 500, message: e.message });
   }
 };
 

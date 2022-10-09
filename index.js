@@ -18,7 +18,7 @@ const {
 const initMailTransporter = require('./mailTransporters');
 
 const { userRoutes, pingRoutes } = require('./routes');
-const { verifyToken } = require('./middleware');
+const { verifyToken, globalErrorHandler } = require('./middleware');
 const { User, Folder, Link } = require('./models');
 
 const app = express();
@@ -51,6 +51,8 @@ app.use(userRoutes);
 app.use(pingRoutes);
 
 app.use(verifyToken);
+
+app.use(globalErrorHandler);
 
 /**
  * Instead of using app.listen, we are creating httpServer. httpServer requires a function which
