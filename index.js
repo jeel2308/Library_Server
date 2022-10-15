@@ -33,13 +33,22 @@ initMailTransporter();
 app.use(setCsp);
 
 /**
- * This will allow request from any origin
+ * This will allow request from only specific origins
  */
-app.use(
-  cors({
-    origin: '*',
-  })
-);
+const whitelist = [
+  'http://localhost:3000',
+  'https://resource-library.netlify.app',
+];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback({ message: 'Not allowed by CORS', statusCode: 403 });
+    }
+  },
+};
+app.use(cors(corsOptions));
 
 /**
  * This will add JSON payload in as req.body Object
