@@ -84,12 +84,12 @@ const localSignIn = async (req, res, next) => {
 
 const googleSignIn = async (req, res, next) => {
   const { idToken } = req.body;
-  const { GOOGLE_CLIENT_ID } = process.env;
+  const { GOOGLE_AUTH_CLIENT_ID } = process.env;
 
   try {
     const loginTicket = await googleAuthClient.verifyIdToken({
       idToken,
-      audience: GOOGLE_CLIENT_ID,
+      audience: GOOGLE_AUTH_CLIENT_ID,
     });
     const { name, email } = loginTicket.getPayload();
     let user = await User.findOne({ email });
