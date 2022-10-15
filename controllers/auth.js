@@ -141,20 +141,20 @@ const microsoftSignIn = async (req, res, next) => {
   }
 };
 
-const signin = async (req, res) => {
+const signin = async (req, res, next) => {
   const { method } = req.body;
 
   switch (method) {
     case 'local': {
-      await localSignIn(req, res);
+      await localSignIn(req, res, next);
       break;
     }
     case 'google': {
-      await googleSignIn(req, res);
+      await googleSignIn(req, res, next);
       break;
     }
     case 'microsoft': {
-      await microsoftSignIn(req, res);
+      await microsoftSignIn(req, res, next);
       break;
     }
   }
@@ -186,7 +186,7 @@ const resetPassword = async (req, res, next) => {
     );
 
     await callService({
-      type: 'SEND_EMAIL_FROM_GMAIL',
+      type: 'SEND_EMAIL_V2',
       data: {
         to: email,
         subject: 'Reset password',
