@@ -17,8 +17,8 @@ const {
 } = require('./dataSource');
 const initMailTransporter = require('./mailTransporters');
 
-const { userRoutes, pingRoutes } = require('./routes');
-const { verifyToken, globalErrorHandler } = require('./middleware');
+const { userRoutes, pingRoutes, cspRoutes } = require('./routes');
+const { verifyToken, globalErrorHandler, setCsp } = require('./middleware');
 const { User, Folder, Link } = require('./models');
 
 const app = express();
@@ -26,6 +26,11 @@ const app = express();
 dotEnv.config();
 
 initMailTransporter();
+
+/**
+ * This will set Content-Security-Policy for each request
+ */
+app.use(setCsp);
 
 /**
  * This will allow request from any origin
@@ -39,8 +44,15 @@ app.use(
 /**
  * This will add JSON payload in as req.body Object
  */
-app.use(express.json());
-
+app.use(
+  express.json({
+    type: [
+      'application/json',
+      'application/csp-report',
+      'application/reports+json',
+    ],
+  })
+);
 /**
  * This will populate URL encoded payload as req.body Object
  */
@@ -49,6 +61,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(userRoutes);
 
 app.use(pingRoutes);
+
+app.use(cspRoutes);
 
 app.use(verifyToken);
 
