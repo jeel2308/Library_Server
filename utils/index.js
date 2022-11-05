@@ -15,4 +15,15 @@ const generateJwt = ({ user }) => {
   });
 };
 
-module.exports = { encodeToBase64, decodeFromBase64, generateJwt };
+const generatePassword = ({ length }) => {
+  return Math.random()
+    .toString(20)
+    .substring(2, 2 + length);
+};
+
+module.exports = {
+  encodeToBase64,
+  decodeFromBase64,
+  generateJwt,
+  generatePassword,
+};

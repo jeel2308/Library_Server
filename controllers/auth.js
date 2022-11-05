@@ -7,7 +7,7 @@ const { OAuth2Client } = require('google-auth-library');
 /**--relative-- */
 
 const callService = require('../services');
-const { generateJwt } = require('../utils');
+const { generateJwt, generatePassword } = require('../utils');
 const { findUser, addUser, findOneAndUpdateUser } = require('../services/user');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -164,10 +164,7 @@ const resetPassword = async (req, res, next) => {
       return next({ statusCode: 404, message: 'User does not exist!' });
     }
 
-    const newPassword = callService({
-      type: 'GENERATE_PASSWORD',
-      data: { length: 10 },
-    });
+    const newPassword = generatePassword({ length: 10 });
 
     await findOneAndUpdateUser(
       { email },
