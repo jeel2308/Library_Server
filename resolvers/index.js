@@ -11,13 +11,22 @@ const { encodeToBase64, decodeFromBase64 } = require('../utils');
 const FolderMutations = require('./FolderMutationsResolver');
 const LinkMutations = require('./LinkMutationsResolver');
 const UserMutations = require('./UserMutationsResolver');
+const {
+  findSingleFolderById,
+  findMultipleFoldersById,
+  findMultipleFoldersByUserId,
+} = require('../services/folder/controllers');
+const {
+  findSingleUserById,
+  findMultipleUsersById,
+} = require('../services/auth/controllers');
 
 const resolvers = {
   Query: {
-    node: async (root, args, context, info) => {
+    node: async (root, args, context) => {
       const { input } = args;
       const {
-        dataSources: { folders, links, users },
+        dataSources: { links },
       } = context;
 
       const { id, type } = input;
@@ -26,21 +35,21 @@ const resolvers = {
 
       switch (type) {
         case 'USER': {
-          data = await users.findOneById(id);
-          break;
+          data = await findSingleUserById({ id });
+          return { ...data, type };
         }
 
         case 'FOLDER': {
-          data = await folders.findOneById(id);
-          break;
+          data = await findSingleFolderById({ id });
+          return { ...data, type };
         }
 
         case 'LINK': {
           data = await links.findOneById(id);
+          const { _doc } = data;
+          return { ..._doc, type };
         }
       }
-      const { _doc } = data;
-      return { ..._doc, type };
     },
     multiNode: async (root, args, context) => {
       const {
@@ -48,35 +57,38 @@ const resolvers = {
       } = args;
 
       const {
-        dataSources: { folders, links, users },
+        dataSources: { links },
       } = context;
 
       let data = [];
 
       switch (type) {
         case 'FOLDER': {
-          data = await folders.findManyByIds(ids);
-          break;
+          data = await findMultipleFoldersById({ ids });
+          return _map(data, (item) => {
+            return { ...item, type };
+          });
         }
 
         case 'LINK': {
           data = await links.findManyByIds(ids);
-          break;
+          return _map(data, (item) => {
+            const { _doc } = item;
+            return { ..._doc, type };
+          });
         }
 
         case 'USER': {
-          data = await users.findManyByIds(ids);
+          data = await findMultipleUsersById({ ids });
+          return _map(data, (item) => {
+            return { ...item, type };
+          });
         }
       }
-
-      return _map(data, (item) => {
-        const { _doc } = item;
-        return { ..._doc, type };
-      });
     },
   },
   Node: {
-    __resolveType: (obj, ctx, info) => {
+    __resolveType: (obj) => {
       const { type } = obj;
 
       switch (type) {
@@ -105,16 +117,9 @@ const resolvers = {
   },
   User: {
     id: ({ _id }) => _id,
-    folders: async (parent, args, context) => {
-      const {
-        dataSources: { folders },
-      } = context;
-
+    folders: async (parent) => {
       const id = parent._id;
-
-      const res = await folders.findByFields({ userId: id });
-
-      return _map(res, ({ _doc }) => _doc);
+      return await findMultipleFoldersByUserId({ userId: id });
     },
   },
   Folder: {
