@@ -9,8 +9,10 @@ const decodeFromBase64 = ({ text }) => {
 };
 
 const generateJwt = ({ user }) => {
-  const { JWT_SECRET } = process.env;
-  return jwt.sign({ id: user._id }, JWT_SECRET);
+  const { JWT_SECRET, ACCESS_TOKEN_EXPIRATION_DURATION } = process.env;
+  return jwt.sign({ id: user._id }, JWT_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRATION_DURATION,
+  });
 };
 
 module.exports = { encodeToBase64, decodeFromBase64, generateJwt };
