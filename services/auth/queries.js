@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { User } = require('./models');
 const _isEmpty = require('lodash/isEmpty');
 
 const findUser = async (filter, projection) => {

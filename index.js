@@ -19,7 +19,8 @@ const initMailTransporter = require('./mailTransporters');
 
 const { userRoutes, pingRoutes, cspRoutes } = require('./routes');
 const { verifyToken, globalErrorHandler, setCsp } = require('./middleware');
-const { User, Folder, Link } = require('./models');
+const { Folder, Link } = require('./models');
+const { User } = require('./services/auth/models');
 
 const app = express();
 

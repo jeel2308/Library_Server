@@ -5,9 +5,9 @@ const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
-const { generateJwt, generatePassword } = require('../utils');
-const { findUser, addUser, findOneAndUpdateUser } = require('../services/user');
-const { sendMailV2 } = require('../services/emailGenerator');
+const { generateJwt, generatePassword } = require('../../utils');
+const { findUser, addUser, findOneAndUpdateUser } = require('./queries');
+const { sendMailV2 } = require('../emailGenerator');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

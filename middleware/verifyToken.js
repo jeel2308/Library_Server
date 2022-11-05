@@ -5,7 +5,7 @@ const isEmpty = require('lodash/isEmpty');
 const split = require('lodash/split');
 
 /**--relative-- */
-const { findUser } = require('../services/user');
+const { findUser } = require('../services/auth/queries');
 
 const verifyToken = async (req, res, next) => {
   const { JWT_SECRET } = process.env;

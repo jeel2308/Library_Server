@@ -5,7 +5,7 @@ const {
   signup,
   resetPassword,
   changePassword,
-} = require('../controllers');
+} = require('../services/auth/controllers');
 
 const router = Router();
 
