@@ -5,9 +5,10 @@ const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
-const { User } = require('../models');
+
 const callService = require('../services');
 const { generateJwt } = require('../utils');
+const { findUser, addUser, findOneAndUpdateUser } = require('../services/user');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -15,17 +16,17 @@ const signup = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    const oldUser = await User.findOne({ email });
+    const oldUser = await findUser({ email });
     if (oldUser) {
       return next({ statusCode: 500, message: 'User already exists!!' });
     }
 
-    const user = new User({
+    const user = await addUser({
       name,
       email,
       password: bcrypt.hashSync(password, 8),
     });
-    await user.save();
+
     const jwt = generateJwt({ user });
 
     res.status(200).send({
@@ -45,7 +46,7 @@ const localSignIn = async (req, res, next) => {
   let user = undefined;
 
   try {
-    user = await User.findOne({ email });
+    user = await findUser({ email });
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
@@ -92,13 +93,9 @@ const googleSignIn = async (req, res, next) => {
       audience: GOOGLE_AUTH_CLIENT_ID,
     });
     const { name, email } = loginTicket.getPayload();
-    let user = await User.findOne({ email });
+    let user = await findUser({ email });
     if (_isEmpty(user)) {
-      user = new User({
-        name,
-        email,
-      });
-      await user.save();
+      user = addUser({ name, email });
     }
     const token = generateJwt({ user });
 
@@ -120,13 +117,9 @@ const microsoftSignIn = async (req, res, next) => {
   try {
     const { preferred_username: email, name } = jwt.decode(idToken);
 
-    let user = await User.findOne({ email });
+    let user = await findUser({ email });
     if (_isEmpty(user)) {
-      user = new User({
-        name,
-        email,
-      });
-      await user.save();
+      user = addUser({ name, email });
     }
     const token = generateJwt({ user });
 
@@ -166,7 +159,7 @@ const resetPassword = async (req, res, next) => {
   let user = null;
 
   try {
-    user = await User.findOne({ email });
+    user = await findUser({ email });
     if (_isEmpty(user)) {
       return next({ statusCode: 404, message: 'User does not exist!' });
     }
@@ -176,7 +169,7 @@ const resetPassword = async (req, res, next) => {
       data: { length: 10 },
     });
 
-    await User.findOneAndUpdate(
+    await findOneAndUpdateUser(
       { email },
       {
         password: bcrypt.hashSync(newPassword, 8),
@@ -207,7 +200,7 @@ const changePassword = async (req, res, next) => {
   const { id: userId, password } = req.body;
 
   try {
-    const user = await User.find({ _id: userId });
+    const user = await findUser({ _id: userId });
 
     if (_isEmpty(user)) {
       return next({ statusCode: 404, message: 'User does not exist!' });
@@ -215,7 +208,7 @@ const changePassword = async (req, res, next) => {
 
     const encryptedPassword = bcrypt.hashSync(password, 8);
 
-    const updatedUser = await User.findOneAndUpdate(
+    const updatedUser = await findOneAndUpdateUser(
       { _id: userId },
       { password: encryptedPassword, showResetPasswordFlow: false },
       { new: true }
