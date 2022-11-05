@@ -27,6 +27,19 @@ const UserSchema = new Schema({
   },
 });
 
+const RefreshTokenSchema = new Schema({
+  refreshToken: {
+    type: String,
+    require: true,
+  },
+  userId: {
+    type: String,
+    require: true,
+  },
+});
+
 const User = mongoose.model('user', UserSchema);
 
-module.exports = { User };
+const RefreshTokenModel = mongoose.model('refresh_token', RefreshTokenSchema);
+
+module.exports = { User, RefreshToken: RefreshTokenModel };
