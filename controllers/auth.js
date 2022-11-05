@@ -5,10 +5,9 @@ const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
-
-const callService = require('../services');
 const { generateJwt, generatePassword } = require('../utils');
 const { findUser, addUser, findOneAndUpdateUser } = require('../services/user');
+const { sendMailV2 } = require('../services/emailGenerator');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -175,16 +174,13 @@ const resetPassword = async (req, res, next) => {
       { new: true }
     );
 
-    await callService({
-      type: 'SEND_EMAIL_V2',
-      data: {
-        to: email,
-        subject: 'Reset password',
-        body: `<p>We have received request for resetting your password.</p>
+    await sendMailV2({
+      to: email,
+      subject: 'Reset password',
+      body: `<p>We have received request for resetting your password.</p>
         <p>Your temporary password is <b>${newPassword}</b></p>
         <p>Sign in with this password and set your new password</p> 
         `,
-      },
     });
 
     res.status(200).send({ message: 'email sent' });
