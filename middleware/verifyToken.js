@@ -5,7 +5,7 @@ const isEmpty = require('lodash/isEmpty');
 const split = require('lodash/split');
 
 /**--relative-- */
-const { User } = require('../models');
+const { findUser } = require('../services/user');
 
 const verifyToken = async (req, res, next) => {
   const { JWT_SECRET } = process.env;
@@ -21,13 +21,13 @@ const verifyToken = async (req, res, next) => {
     try {
       decodedUser = jwt.verify(token, JWT_SECRET);
     } catch (e) {
-      return next({ statusCode: 401, message: 'Invalid token' });
+      return next({ statusCode: 403, message: e.message || 'Invalid token' });
     }
 
     let user = undefined;
 
     try {
-      user = await User.findOne({ _id: decodedUser.id });
+      user = await findUser({ _id: decodedUser.id });
     } catch (e) {
       return next({ statusCode: 500, message: e.message });
     }
