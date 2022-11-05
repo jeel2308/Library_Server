@@ -10,12 +10,12 @@ const cors = require('cors');
 /**--internal-- */
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
-const { FolderDataStore, LinkDataStore } = require('./dataSource');
+const { LinkDataStore } = require('./dataSource');
 const initMailTransporter = require('./mailTransporters');
 
 const { userRoutes, pingRoutes, cspRoutes } = require('./routes');
 const { verifyToken, globalErrorHandler, setCsp } = require('./middleware');
-const { Folder, Link } = require('./models');
+const { Link } = require('./models');
 
 const app = express();
 
@@ -99,7 +99,6 @@ const startServer = async () => {
       resolvers,
       dataSources: () => {
         return {
-          folders: new FolderDataStore(Folder),
           links: new LinkDataStore(Link),
         };
       },
