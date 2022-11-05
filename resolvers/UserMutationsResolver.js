@@ -1,16 +1,15 @@
+const { findOneAndUpdateUser } = require('../services/auth/queries');
+
 const UserMutations = {
-  updateUser: async (_, args, context) => {
-    const {
-      dataSources: { users },
-    } = context;
-
+  updateUser: async (_, args) => {
     const { input } = args;
+    const { id, ...otherUpdates } = input;
 
-    const result = await users.updateUser(input);
+    const result = await findOneAndUpdateUser({ _id: id }, otherUpdates, {
+      new: true,
+    });
 
-    const { _doc: user } = result;
-
-    return user;
+    return result;
   },
 };
 
