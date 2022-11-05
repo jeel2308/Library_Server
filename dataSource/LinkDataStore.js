@@ -7,7 +7,7 @@ const _has = require('lodash/has');
 
 const { MongoDataSource } = require('apollo-datasource-mongodb');
 
-const { getMetadata } = require('../scraper');
+const { getMetadata } = require('../services/getMetadata');
 const { ObjectId } = require('mongodb');
 class LinkDataStore extends MongoDataSource {
   addLink = async ({ url, folderId, isCompleted = false }) => {
