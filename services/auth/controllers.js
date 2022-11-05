@@ -6,7 +6,12 @@ const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
 const { generateJwt, generatePassword } = require('../../utils');
-const { findUser, addUser, findOneAndUpdateUser } = require('./queries');
+const {
+  findSingleUser: findUser,
+  addUser,
+  findOneAndUpdateUser,
+  findMultipleUsers,
+} = require('./queries');
 const { sendMailV2 } = require('../emailGenerator');
 
 const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -193,7 +198,7 @@ const changePassword = async (req, res, next) => {
   const { id: userId, password } = req.body;
 
   try {
-    const user = await findUser({ _id: userId });
+    const user = await findSingleUserById({ id: userId });
 
     if (_isEmpty(user)) {
       return next({ statusCode: 404, message: 'User does not exist!' });
@@ -220,9 +225,24 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+const findMultipleUsersById = async ({ ids }) => {
+  return await findMultipleUsers({ _id: { $in: ids } });
+};
+
+const findSingleUserById = async ({ id }) => {
+  return await findUser({ _id: id });
+};
+
+const updateUserById = async ({ id, ...otherUpdates }) => {
+  return await findOneAndUpdateUser({ _id: id }, otherUpdates, { new: true });
+};
+
 module.exports = {
   signin,
   signup,
   resetPassword,
   changePassword,
+  findMultipleUsersById,
+  findSingleUserById,
+  updateUserById,
 };
