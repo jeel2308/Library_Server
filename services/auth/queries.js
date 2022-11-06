@@ -12,7 +12,8 @@ const addUser = async ({ name, email, password = '' }) => {
 };
 
 const findOneAndUpdateUser = async (filter, update, options) => {
-  return await User.findOneAndUpdate(filter, update, options);
+  const { _doc } = await User.findOneAndUpdate(filter, update, options);
+  return _doc;
 };
 
 const findMultipleUsers = async (filter, projection) => {

@@ -8,11 +8,13 @@ const addFolder = async ({ name, userId }) => {
 };
 
 const updateFolder = async (filter, update, options) => {
-  return await Folder.findOneAndUpdate(filter, update, options);
+  const { _doc } = await Folder.findOneAndUpdate(filter, update, options);
+  return _doc;
 };
 
 const deleteFolder = async (filter, options) => {
-  return await Folder.findOneAndDelete(filter, options);
+  const { _doc } = await Folder.findOneAndDelete(filter, options);
+  return _doc;
 };
 
 const findMultipleFolders = async (filter, projection) => {
