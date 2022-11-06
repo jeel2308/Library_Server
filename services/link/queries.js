@@ -45,17 +45,8 @@ const updateMultipleLinks = async (allOperations) => {
   return await Link.bulkWrite(payload);
 };
 
-const deleteMultipleLinks = async (allOperations) => {
-  const payload = _map(allOperations, (data) => {
-    const { filter } = data;
-    return {
-      deleteOne: {
-        filter,
-      },
-    };
-  });
-
-  return await Link.bulkWrite(payload);
+const deleteMultipleLinks = async (filter) => {
+  return await Link.deleteMany(filter);
 };
 
 const getCountOfLinks = async (filter) => {

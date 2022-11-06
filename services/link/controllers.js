@@ -73,21 +73,14 @@ const deleteLinksById = async (links) => {
   const linksIds = _map(links, ({ id }) => id);
   const linksToBeDeleted = findMultipleLinks({ _id: { $in: linksIds } });
 
-  const allDeleteOperations = _map(links, ({ id }) => {
-    return {
-      filter: { _id: id },
-    };
-  });
-
-  await deleteMultipleLinks(allDeleteOperations);
+  await deleteMultipleLinks({ _id: { $in: linksIds } });
   return linksToBeDeleted;
 };
 
 const deleteLinksByFolderId = async ({ folderId }) => {
   const linksToBeDeleted = findMultipleLinks({ folderId });
 
-  const allOperations = [{ filter: { folderId } }];
-  await deleteMultipleLinks(allOperations);
+  await deleteMultipleLinks({ folderId });
   return linksToBeDeleted;
 };
 
