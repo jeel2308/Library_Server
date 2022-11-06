@@ -30,8 +30,8 @@ const updateFolderById = async ({ id, ...otherUpdates }) => {
 
 const deleteFolderById = async ({ id }) => {
   const folder = await deleteFolder({ _id: id });
-  const links = await deleteLinksByFolderId({ folderId: id });
-  return { folder, links };
+  await deleteLinksByFolderId({ folderId: id });
+  return folder;
 };
 
 module.exports = {

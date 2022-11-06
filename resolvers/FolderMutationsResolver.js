@@ -27,11 +27,7 @@ const FolderMutations = {
       input: { id },
     } = args;
 
-    const { folder, links } = await deleteFolderById({ id });
-    /**
-     * Think better solution for how to avoid computation of linksV2
-     */
-    return { ...folder, linksV2: links };
+    return await deleteFolderById({ id });
   },
 };
 

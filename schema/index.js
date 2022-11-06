@@ -50,6 +50,11 @@ const typeDefs = `
       linksV2(input:FolderLinkFiltersV2):LinkWrapper!
   }
 
+  type DeleteFolderResponse {
+      id:ID!
+      name: String!
+  }
+
   enum NodeType{
       USER
       FOLDER
@@ -121,7 +126,7 @@ const typeDefs = `
   type FolderMutations{
      addFolder(input:AddFolderInput!):Folder!
      updateFolder(input:UpdateFolderInput!):Folder!
-     deleteFolder(input:DeleteFolderInput!):Folder!
+     deleteFolder(input:DeleteFolderInput!):DeleteFolderResponse!
   }
 
   type LinkMutations{

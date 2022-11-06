@@ -78,10 +78,7 @@ const deleteLinksById = async (links) => {
 };
 
 const deleteLinksByFolderId = async ({ folderId }) => {
-  const linksToBeDeleted = findMultipleLinks({ folderId });
-
   await deleteMultipleLinks({ folderId });
-  return linksToBeDeleted;
 };
 
 const findLinkById = async ({ id }) => {
