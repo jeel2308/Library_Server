@@ -5,7 +5,7 @@ const isEmpty = require('lodash/isEmpty');
 const split = require('lodash/split');
 
 /**--relative-- */
-const { findSingleUserById } = require('../services/auth/controllers');
+const { findUserById } = require('../services/auth/controllers');
 
 const verifyToken = async (req, res, next) => {
   const { JWT_SECRET } = process.env;
@@ -27,7 +27,7 @@ const verifyToken = async (req, res, next) => {
     let user = undefined;
 
     try {
-      user = await findSingleUserById({ id: decodedUser.id });
+      user = await findUserById({ id: decodedUser.id });
     } catch (e) {
       return next({ statusCode: 500, message: e.message });
     }

@@ -16,7 +16,7 @@ const {
   findMultipleFoldersByUserId,
 } = require('../services/folder/controllers');
 const {
-  findSingleUserById,
+  findUserById,
   findMultipleUsersById,
 } = require('../services/auth/controllers');
 const {
@@ -38,7 +38,7 @@ const resolvers = {
 
       switch (type) {
         case 'USER': {
-          data = await findSingleUserById({ id });
+          data = await findUserById({ id });
           break;
         }
 

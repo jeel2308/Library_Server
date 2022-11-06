@@ -1,12 +1,6 @@
 const { User } = require('./models');
 const _isEmpty = require('lodash/isEmpty');
 
-const findSingleUser = async (filter, projection) => {
-  const params = _isEmpty(projection) ? [filter] : [filter, projection];
-  const { _doc } = await User.findOne(...params);
-  return _doc;
-};
-
 const addUser = async ({ name, email, password = '' }) => {
   const user = new User({
     name,
@@ -28,7 +22,6 @@ const findMultipleUsers = async (filter, projection) => {
 };
 
 module.exports = {
-  findSingleUser,
   findMultipleUsers,
   addUser,
   findOneAndUpdateUser,

@@ -7,7 +7,6 @@ const { OAuth2Client } = require('google-auth-library');
 /**--relative-- */
 const { generateJwt, generatePassword } = require('../../utils');
 const {
-  findSingleUser: findUser,
   addUser,
   findOneAndUpdateUser,
   findMultipleUsers,
@@ -20,7 +19,7 @@ const signup = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    const oldUser = await findUser({ email });
+    const oldUser = await findUserByEmail({ email });
     if (oldUser) {
       return next({ statusCode: 500, message: 'User already exists!!' });
     }
@@ -50,7 +49,7 @@ const localSignIn = async (req, res, next) => {
   let user = undefined;
 
   try {
-    user = await findUser({ email });
+    user = await findUserByEmail({ email });
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
@@ -97,7 +96,7 @@ const googleSignIn = async (req, res, next) => {
       audience: GOOGLE_AUTH_CLIENT_ID,
     });
     const { name, email } = loginTicket.getPayload();
-    let user = await findUser({ email });
+    let user = await findUserByEmail({ email });
     if (_isEmpty(user)) {
       user = addUser({ name, email });
     }
@@ -121,7 +120,7 @@ const microsoftSignIn = async (req, res, next) => {
   try {
     const { preferred_username: email, name } = jwt.decode(idToken);
 
-    let user = await findUser({ email });
+    let user = await findUserByEmail({ email });
     if (_isEmpty(user)) {
       user = addUser({ name, email });
     }
@@ -163,7 +162,7 @@ const resetPassword = async (req, res, next) => {
   let user = null;
 
   try {
-    user = await findUser({ email });
+    user = await findUserByEmail({ email });
     if (_isEmpty(user)) {
       return next({ statusCode: 404, message: 'User does not exist!' });
     }
@@ -198,7 +197,7 @@ const changePassword = async (req, res, next) => {
   const { id: userId, password } = req.body;
 
   try {
-    const user = await findSingleUserById({ id: userId });
+    const user = await findUserById({ id: userId });
 
     if (_isEmpty(user)) {
       return next({ statusCode: 404, message: 'User does not exist!' });
@@ -229,8 +228,14 @@ const findMultipleUsersById = async ({ ids }) => {
   return await findMultipleUsers({ _id: { $in: ids } });
 };
 
-const findSingleUserById = async ({ id }) => {
-  return await findUser({ _id: id });
+const findUserById = async ({ id }) => {
+  const [user] = await findMultipleUsers({ _id: id });
+  return user;
+};
+
+const findUserByEmail = async ({ email }) => {
+  const [user] = await findMultipleUsers({ email });
+  return user;
 };
 
 const updateUserById = async ({ id, ...otherUpdates }) => {
@@ -243,6 +248,7 @@ module.exports = {
   resetPassword,
   changePassword,
   findMultipleUsersById,
-  findSingleUserById,
+  findUserById,
+  findUserByEmail,
   updateUserById,
 };
