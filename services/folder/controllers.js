@@ -4,6 +4,7 @@ const {
   updateFolder,
   deleteFolder,
 } = require('./queries');
+const { deleteLinksByFolderId } = require('../link/controllers');
 
 const findMultipleFoldersById = async ({ ids }) => {
   return await findMultipleFolders({ _id: { $in: ids } });
@@ -28,7 +29,9 @@ const updateFolderById = async ({ id, ...otherUpdates }) => {
 };
 
 const deleteFolderById = async ({ id }) => {
-  return await deleteFolder({ _id: id });
+  const folder = await deleteFolder({ _id: id });
+  const links = await deleteLinksByFolderId({ folderId: id });
+  return { folder, links };
 };
 
 module.exports = {

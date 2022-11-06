@@ -83,6 +83,14 @@ const deleteLinksById = async (links) => {
   return linksToBeDeleted;
 };
 
+const deleteLinksByFolderId = async ({ folderId }) => {
+  const linksToBeDeleted = findMultipleLinks({ folderId });
+
+  const allOperations = [{ filter: { folderId } }];
+  await deleteMultipleLinks(allOperations);
+  return linksToBeDeleted;
+};
+
 const findLinkById = async ({ id }) => {
   const [link] = await findMultipleLinks({ _id: id });
   return link;
@@ -127,6 +135,7 @@ module.exports = {
   addSingleLinkByFolderId,
   updateLinksById,
   deleteLinksById,
+  deleteLinksByFolderId,
   findLinkById,
   findLinksByIds,
   findLinksByFolderId,
