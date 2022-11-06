@@ -20,6 +20,15 @@ const typeDefs = `
       thumbnail: String
   }
 
+  type DeleteLinkResponse implements Node{
+      id:ID!
+      url: String!
+      isCompleted: Boolean!
+      title: String
+      description: String
+      thumbnail: String
+  }
+
   type LinkEdge{
       node: Link!
       cursor: String!
@@ -132,7 +141,7 @@ const typeDefs = `
   type LinkMutations{
       addLink(input:AddLinkInput!):Link!
       updateLink(input:[UpdateLinkInput!]!):[Link!]!
-      deleteLink(input:[DeleteLinkInput!]!):[Link!]!
+      deleteLink(input:[DeleteLinkInput!]!):[DeleteLinkResponse!]!
       updateLinksMetadata(input:[UpdateLinkMetadataInput!]!):[Link!]! @deprecated(reason: "addLink and updateLink will handle updating metadata")
   }
 

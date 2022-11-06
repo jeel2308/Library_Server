@@ -173,6 +173,9 @@ const resolvers = {
   DeleteFolderResponse: {
     id: ({ _id }) => _id,
   },
+  DeleteLinkResponse: {
+    id: ({ _id }) => _id,
+  },
   FolderMutations,
   LinkMutations,
   UserMutations,
