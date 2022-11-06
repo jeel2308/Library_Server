@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apollo-datasource-mongodb": "^0.5.2",
     "apollo-server": "^3.6.1",
     "apollo-server-core": "^3.6.1",
     "apollo-server-express": "^3.6.1",
