@@ -1,46 +1,25 @@
-const _map = require('lodash/map');
+const {
+  addSingleLinkByFolderId,
+  updateLinksById,
+  deleteLinksById,
+} = require('../services/link/controllers');
 
 const LinkMutations = {
-  addLink: async (_, args, context) => {
-    const {
-      input: { url, folderId, isCompleted },
-    } = args;
-    const {
-      dataSources: { links },
-    } = context;
-
-    const { _doc } = await links.addLink({ url, folderId, isCompleted });
-
-    return _doc;
+  addLink: async (_, args) => {
+    const { input } = args;
+    return await addSingleLinkByFolderId(input);
   },
-  updateLink: async (_, args, context) => {
-    const { input: inputArray } = args;
-    const {
-      dataSources: { links },
-    } = context;
-
-    const result = await links.updateLink(inputArray);
-
-    return _map(result, ({ _doc }) => _doc);
+  updateLink: async (_, args) => {
+    const { input } = args;
+    return await updateLinksById(input);
   },
-  deleteLink: async (_, args, context) => {
-    const { input: inputArray } = args;
-    const {
-      dataSources: { links },
-    } = context;
-    const result = await links.deleteLink(inputArray);
-
-    return _map(result, ({ _doc }) => {
-      return _doc;
-    });
+  deleteLink: async (_, args) => {
+    const { input } = args;
+    return await deleteLinksById(input);
   },
-  updateLinksMetadata: async (_, args, context) => {
-    const { input: inputArray } = args;
-    const {
-      dataSources: { links },
-    } = context;
-    const result = await links.updateLinksMetadata(inputArray);
-    return result;
+  updateLinksMetadata: async (_, args) => {
+    const { input } = args;
+    return await updateLinksById(input);
   },
 };
 

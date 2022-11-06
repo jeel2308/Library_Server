@@ -2,10 +2,9 @@
 const _map = require('lodash/map');
 const _last = require('lodash/last');
 const _isEmpty = require('lodash/isEmpty');
-const _omit = require('lodash/omit');
 
 /**--internal-- */
-const { encodeToBase64, decodeFromBase64 } = require('../utils');
+const { encodeToBase64 } = require('../utils');
 
 /**--relative--*/
 const FolderMutations = require('./FolderMutationsResolver');
@@ -20,14 +19,18 @@ const {
   findSingleUserById,
   findMultipleUsersById,
 } = require('../services/auth/controllers');
+const {
+  findLinkById,
+  findLinksByIds,
+  findLinksByFilters,
+  getTotalLinkCountsByFilters,
+  getNextLinkPresenceStatus,
+} = require('../services/link/controllers');
 
 const resolvers = {
   Query: {
-    node: async (root, args, context) => {
+    node: async (root, args) => {
       const { input } = args;
-      const {
-        dataSources: { links },
-      } = context;
 
       const { id, type } = input;
 
@@ -36,55 +39,46 @@ const resolvers = {
       switch (type) {
         case 'USER': {
           data = await findSingleUserById({ id });
-          return { ...data, type };
+          break;
         }
 
         case 'FOLDER': {
           data = await findSingleFolderById({ id });
-          return { ...data, type };
+          break;
         }
 
         case 'LINK': {
-          data = await links.findOneById(id);
-          const { _doc } = data;
-          return { ..._doc, type };
+          data = await findLinkById({ id });
+          break;
         }
       }
+      return { ...data, type };
     },
-    multiNode: async (root, args, context) => {
+    multiNode: async (root, args) => {
       const {
         input: { ids, type },
       } = args;
-
-      const {
-        dataSources: { links },
-      } = context;
 
       let data = [];
 
       switch (type) {
         case 'FOLDER': {
           data = await findMultipleFoldersById({ ids });
-          return _map(data, (item) => {
-            return { ...item, type };
-          });
+          break;
         }
 
         case 'LINK': {
-          data = await links.findManyByIds(ids);
-          return _map(data, (item) => {
-            const { _doc } = item;
-            return { ..._doc, type };
-          });
+          data = await findLinksByIds({ ids });
+          break;
         }
 
         case 'USER': {
           data = await findMultipleUsersById({ ids });
-          return _map(data, (item) => {
-            return { ...item, type };
-          });
         }
       }
+      return _map(data, (item) => {
+        return { ...item, type };
+      });
     },
   },
   Node: {
@@ -124,55 +118,32 @@ const resolvers = {
   },
   Folder: {
     id: ({ _id }) => _id,
-    links: async (parent, args, context) => {
-      const {
-        dataSources: { links },
-      } = context;
-
+    links: async (parent, args) => {
       const id = parent._id;
-
-      const res = await links.findLinks({
+      return await findLinksByFilters({
         folderId: id,
-        ...(args?.input ?? {}),
+        filters: args?.input ?? {},
       });
-
-      return _map(res, ({ _doc }) => _doc);
     },
-    linksV2: async (parent, args, context) => {
-      const {
-        dataSources: { links },
-      } = context;
+    linksV2: async (parent, args) => {
       const folderId = parent._id;
       const filters = args?.input ?? {};
-      let updatedFilters = { ...filters };
-      if (filters.after) {
-        updatedFilters.after = decodeFromBase64({ text: filters.after });
-      }
+      const edges = await findLinksByFilters({ folderId, filters });
 
-      const edges = await links.findLinksV2({
-        folderId,
-        filters: updatedFilters,
-      });
-
-      return { folderId, edges, filters: updatedFilters };
+      return { folderId, edges, filters };
     },
   },
   Link: {
     id: ({ _id }) => _id,
   },
   LinkWrapper: {
-    totalCount: async (parent, _, context) => {
-      const {
-        dataSources: { links },
-      } = context;
+    totalCount: async (parent) => {
       const { filters } = parent;
       const { folderId } = parent;
-      const updatedFilters = {
+      return await getTotalLinkCountsByFilters({
         folderId,
-        ..._omit(filters, ['after', 'first']),
-      };
-      const totalLinks = await links.getTotalLinks(updatedFilters);
-      return totalLinks;
+        filters,
+      });
     },
     edges: (parent) => {
       const { edges } = parent;
@@ -181,7 +152,7 @@ const resolvers = {
         return { node: link, cursor: encodeToBase64({ text: _id }) };
       });
     },
-    pageInfo: async (parent, _, context) => {
+    pageInfo: async (parent) => {
       const { edges, filters, folderId } = parent;
       if (_isEmpty(edges)) {
         return { endCursor: null, hasNextPage: false };
@@ -189,14 +160,11 @@ const resolvers = {
       const lastLinkId = _last(edges)._id;
 
       const endCursor = encodeToBase64({ text: lastLinkId });
-      const {
-        dataSources: { links },
-      } = context;
 
-      const hasNextPage = await links.getNextLinkPresenceStatus({
-        linkId: lastLinkId,
+      const hasNextPage = await getNextLinkPresenceStatus({
         folderId,
-        ...filters,
+        filters,
+        cursor: endCursor,
       });
 
       return { endCursor, hasNextPage };
