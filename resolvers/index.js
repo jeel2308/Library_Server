@@ -11,7 +11,7 @@ const FolderMutations = require('./FolderMutationsResolver');
 const LinkMutations = require('./LinkMutationsResolver');
 const UserMutations = require('./UserMutationsResolver');
 const {
-  findSingleFolderById,
+  findFolderById,
   findMultipleFoldersById,
   findMultipleFoldersByUserId,
 } = require('../services/folder/controllers');
@@ -43,7 +43,7 @@ const resolvers = {
         }
 
         case 'FOLDER': {
-          data = await findSingleFolderById({ id });
+          data = await findFolderById({ id });
           break;
         }
 

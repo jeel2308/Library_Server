@@ -1,6 +1,5 @@
 const {
   findMultipleFolders,
-  findSingleFolder,
   addFolder,
   updateFolder,
   deleteFolder,
@@ -14,8 +13,9 @@ const findMultipleFoldersByUserId = async ({ userId }) => {
   return await findMultipleFolders({ userId });
 };
 
-const findSingleFolderById = async ({ id }) => {
-  return await findSingleFolder({ _id: id });
+const findFolderById = async ({ id }) => {
+  const [folder] = await findMultipleFolders({ _id: id });
+  return folder;
 };
 
 const addFolderByUserId = async (folderDetails) => {
@@ -34,7 +34,7 @@ const deleteFolderById = async ({ id }) => {
 module.exports = {
   findMultipleFoldersById,
   findMultipleFoldersByUserId,
-  findSingleFolderById,
+  findFolderById,
   addFolderByUserId,
   updateFolderById,
   deleteFolderById,

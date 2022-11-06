@@ -15,12 +15,6 @@ const deleteFolder = async (filter, options) => {
   return await Folder.findOneAndDelete(filter, options);
 };
 
-const findSingleFolder = async (filter, projection) => {
-  const params = _isEmpty(projection) ? [filter] : [filter, projection];
-  const { _doc } = await Folder.findOne(...params);
-  return _doc;
-};
-
 const findMultipleFolders = async (filter, projection) => {
   const params = _isEmpty(projection) ? [filter] : [filter, projection];
   const res = await Folder.find(...params);
@@ -31,6 +25,5 @@ module.exports = {
   addFolder,
   updateFolder,
   deleteFolder,
-  findSingleFolder,
   findMultipleFolders,
 };
