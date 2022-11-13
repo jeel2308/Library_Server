@@ -7,11 +7,11 @@ const http = require('http');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-/**--internal-- */
+/**--relative-- */
 const { resolvers } = require('./resolvers');
 const { typeDefs } = require('./schema');
 const initMailTransporter = require('./mailTransporters');
-
+const buildDataLoaders = require('./dataloaders');
 const { userRoutes, pingRoutes, cspRoutes } = require('./routes');
 const { verifyToken, globalErrorHandler, setCsp } = require('./middleware');
 
@@ -32,6 +32,7 @@ app.use(setCsp);
 const whitelist = [
   'http://localhost:3000',
   'https://resource-library.netlify.app',
+  'https://studio.apollographql.com',
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -98,6 +99,7 @@ const startServer = async () => {
       context: ({ req }) => {
         return {
           user: req.user,
+          loaders: buildDataLoaders(),
         };
       },
       plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],

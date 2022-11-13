@@ -16,10 +16,6 @@ const {
   findMultipleFoldersByUserId,
 } = require('../services/folder/controllers');
 const {
-  findUserById,
-  findMultipleUsersById,
-} = require('../services/auth/controllers');
-const {
   findLinkById,
   findLinksByIds,
   findLinksByFilters,
@@ -29,16 +25,19 @@ const {
 
 const resolvers = {
   Query: {
-    node: async (root, args) => {
+    node: async (root, args, context) => {
       const { input } = args;
-
       const { id, type } = input;
+
+      const {
+        loaders: { loadUserById },
+      } = context;
 
       let data = {};
 
       switch (type) {
         case 'USER': {
-          data = await findUserById({ id });
+          data = await loadUserById.load(id);
           break;
         }
 
@@ -54,10 +53,14 @@ const resolvers = {
       }
       return { ...data, type };
     },
-    multiNode: async (root, args) => {
+    multiNode: async (root, args, context) => {
       const {
         input: { ids, type },
       } = args;
+
+      const {
+        loaders: { loadUserById },
+      } = context;
 
       let data = [];
 
@@ -73,7 +76,7 @@ const resolvers = {
         }
 
         case 'USER': {
-          data = await findMultipleUsersById({ ids });
+          data = await loadUserById.loadMany(ids);
         }
       }
       return _map(data, (item) => {
