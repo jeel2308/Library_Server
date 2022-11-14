@@ -1,8 +1,10 @@
+const _map = require('lodash/map');
 const {
   findMultipleFolders,
   addFolder,
   updateFolder,
   deleteFolder,
+  aggregateFolders,
 } = require('./queries');
 const { deleteLinksByFolderId } = require('../link/controllers');
 
@@ -11,6 +13,7 @@ const findMultipleFoldersById = async ({ ids }) => {
 };
 
 const findMultipleFoldersByUserId = async ({ userId }) => {
+  console.log({ userId, type: typeof userId });
   return await findMultipleFolders({ userId });
 };
 
@@ -34,6 +37,20 @@ const deleteFolderById = async ({ id }) => {
   return folder;
 };
 
+const aggregateFolderIdsByUserIds = async ({ userIds }) => {
+  /**
+   * Normalization is needed as userId can be string or ObjectId.
+   * Mongoose is not handling String and ObjectId comparison in aggregates
+   */
+  const normalizedUserIds = _map(userIds, (id) => id.toString());
+
+  return await aggregateFolders([
+    { $match: { userId: { $in: normalizedUserIds } } },
+    { $project: { _id: 1, userId: 1 } },
+    { $group: { _id: '$userId', folders: { $addToSet: '$_id' } } },
+  ]);
+};
+
 module.exports = {
   findMultipleFoldersById,
   findMultipleFoldersByUserId,
@@ -41,4 +58,5 @@ module.exports = {
   addFolderByUserId,
   updateFolderById,
   deleteFolderById,
+  aggregateFolderIdsByUserIds,
 };
