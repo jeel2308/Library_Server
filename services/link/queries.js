@@ -10,8 +10,7 @@ const addSingleLink = async (params) => {
 
 const findMultipleLinks = async (filter, projection) => {
   const params = _isEmpty(projection) ? [filter] : [filter, projection];
-  const res = await Link.find(...params);
-  return res.map(({ _doc }) => _doc);
+  return await Link.find(...params).lean();
 };
 
 const findMultipleLinksForPagination = async (
@@ -27,8 +26,7 @@ const findMultipleLinksForPagination = async (
     queryObj.limit(limit);
   }
 
-  const res = await queryObj;
-  return res.map(({ _doc }) => _doc);
+  return await queryObj.lean();
 };
 
 const updateMultipleLinks = async (allOperations) => {

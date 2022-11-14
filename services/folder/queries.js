@@ -8,19 +8,20 @@ const addFolder = async ({ name, userId }) => {
 };
 
 const updateFolder = async (filter, update, options) => {
-  const { _doc } = await Folder.findOneAndUpdate(filter, update, options);
-  return _doc;
+  return await Folder.findOneAndUpdate(filter, update, options).lean();
 };
 
 const deleteFolder = async (filter, options) => {
-  const { _doc } = await Folder.findOneAndDelete(filter, options);
-  return _doc;
+  return await Folder.findOneAndDelete(filter, options).lean();
 };
 
 const findMultipleFolders = async (filter, projection) => {
   const params = _isEmpty(projection) ? [filter] : [filter, projection];
-  const res = await Folder.find(...params);
-  return res.map(({ _doc }) => _doc);
+  return await Folder.find(...params).lean();
+};
+
+const aggregateFolders = async (pipeline) => {
+  return await Folder.aggregate(pipeline);
 };
 
 module.exports = {
@@ -28,4 +29,5 @@ module.exports = {
   updateFolder,
   deleteFolder,
   findMultipleFolders,
+  aggregateFolders,
 };
