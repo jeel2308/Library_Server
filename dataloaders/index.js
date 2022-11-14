@@ -3,7 +3,7 @@ const DataLoader = require('dataloader');
 
 /**--relative-- */
 const { batchLoadUsersByIds } = require('./auth');
-const { batchLoadFolderIdsByUserId } = require('./folder');
+const { batchLoadFolderIdsByUserId, batchLoadFolderById } = require('./folder');
 
 const buildDataLoaders = () => {
   return {
@@ -11,6 +11,7 @@ const buildDataLoaders = () => {
     loadFolderIdsByUserId: new DataLoader((keys) =>
       batchLoadFolderIdsByUserId({ keys })
     ),
+    loadFolderById: new DataLoader((keys) => batchLoadFolderById({ keys })),
   };
 };
 
