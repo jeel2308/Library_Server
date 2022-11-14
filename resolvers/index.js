@@ -13,7 +13,6 @@ const UserMutations = require('./UserMutationsResolver');
 const {
   findFolderById,
   findMultipleFoldersById,
-  findMultipleFoldersByUserId,
 } = require('../services/folder/controllers');
 const {
   findLinkById,
@@ -114,9 +113,22 @@ const resolvers = {
   },
   User: {
     id: ({ _id }) => _id,
-    folders: async (parent) => {
+    folders: async (parent, args, context) => {
+      const {
+        loaders: { loadFolderIdsByUserId, loadFolderById },
+      } = context;
       const id = parent._id;
-      return await findMultipleFoldersByUserId({ userId: id });
+      // console.time(`FOLDER-${id}`);
+      // console.time(`FOLDER_BY_USER_${id}`);
+      const data = await loadFolderIdsByUserId.load(id);
+      // console.log('DATA LOADER FOR ', id, { data });
+      // console.timeEnd(`FOLDER_BY_USER_${id}`);
+      // console.time(`FOLDER_BY_FOLDER_${id}`);
+      const result = await loadFolderById.loadMany(data);
+      // console.timeEnd(`FOLDER_BY_FOLDER_${id}`);
+      // const result = findMultipleFoldersByUserId({ userId: id });
+      // console.timeEnd(`FOLDER-${id}`);
+      return result;
     },
   },
   Folder: {

@@ -12,8 +12,11 @@ const findMultipleFoldersById = async ({ ids }) => {
   return await findMultipleFolders({ _id: { $in: ids } });
 };
 
+/**
+ * @deprecated
+ */
 const findMultipleFoldersByUserId = async ({ userId }) => {
-  console.log({ userId, type: typeof userId });
+  console.log({ userId });
   return await findMultipleFolders({ userId });
 };
 
