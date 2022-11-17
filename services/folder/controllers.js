@@ -16,7 +16,6 @@ const findMultipleFoldersById = async ({ ids }) => {
  * @deprecated
  */
 const findMultipleFoldersByUserId = async ({ userId }) => {
-  console.log({ userId });
   return await findMultipleFolders({ userId });
 };
 
@@ -49,8 +48,12 @@ const aggregateFolderIdsByUserIds = async ({ userIds }) => {
 
   return await aggregateFolders([
     { $match: { userId: { $in: normalizedUserIds } } },
-    { $project: { _id: 1, userId: 1 } },
-    { $group: { _id: '$userId', folders: { $addToSet: '$_id' } } },
+    {
+      $group: {
+        _id: '$userId',
+        folders: { $push: { _id: '$_id', name: '$name' } },
+      },
+    },
   ]);
 };
 

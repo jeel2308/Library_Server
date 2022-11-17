@@ -115,20 +115,14 @@ const resolvers = {
     id: ({ _id }) => _id,
     folders: async (parent, args, context) => {
       const {
-        loaders: { loadFolderIdsByUserId, loadFolderById },
+        loaders: { loadFolderIdsByUserId },
       } = context;
+      /**
+       * Here data loader is increasing time of db call compare to regular controller call.
+       * Figure out why. Since data loader is increasing latency, we have fetched data using single loader only.
+       */
       const id = parent._id;
-      // console.time(`FOLDER-${id}`);
-      // console.time(`FOLDER_BY_USER_${id}`);
-      const data = await loadFolderIdsByUserId.load(id);
-      // console.log('DATA LOADER FOR ', id, { data });
-      // console.timeEnd(`FOLDER_BY_USER_${id}`);
-      // console.time(`FOLDER_BY_FOLDER_${id}`);
-      const result = await loadFolderById.loadMany(data);
-      // console.timeEnd(`FOLDER_BY_FOLDER_${id}`);
-      // const result = findMultipleFoldersByUserId({ userId: id });
-      // console.timeEnd(`FOLDER-${id}`);
-      return result;
+      return await loadFolderIdsByUserId.load(id);
     },
   },
   Folder: {
