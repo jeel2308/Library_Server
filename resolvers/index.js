@@ -15,6 +15,9 @@ const {
   getTotalLinkCountsByFilters,
   getNextLinkPresenceStatus,
 } = require('../services/link/controllers');
+const {
+  aggregateFolderIdsByUserIds,
+} = require('../services/folder/controllers');
 
 const resolvers = {
   Query: {
@@ -109,14 +112,15 @@ const resolvers = {
     id: ({ _id }) => _id,
     folders: async (parent, args, context) => {
       const {
-        loaders: { loadFolderIdsByUserId },
+        loaders: { loadFolderById },
       } = context;
-      /**
-       * Here data loader is increasing time of db call compare to regular controller call.
-       * Figure out why. Since data loader is increasing latency, we have fetched data using single loader only.
-       */
+
       const id = parent._id;
-      return await loadFolderIdsByUserId.load(id);
+      const [{ folders }] = await aggregateFolderIdsByUserIds({
+        userIds: [id],
+      });
+      const folderIds = _map(folders, ({ _id }) => _id);
+      return loadFolderById.loadMany(folderIds);
     },
   },
   Folder: {

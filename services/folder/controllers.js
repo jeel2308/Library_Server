@@ -54,7 +54,7 @@ const aggregateFolderIdsByUserIds = async ({ userIds }) => {
     {
       $group: {
         _id: '$userId',
-        folders: { $push: { _id: '$_id', name: '$name' } },
+        folders: { $push: { _id: '$_id' } },
       },
     },
   ]);
