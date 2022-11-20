@@ -11,8 +11,6 @@ const FolderMutations = require('./FolderMutationsResolver');
 const LinkMutations = require('./LinkMutationsResolver');
 const UserMutations = require('./UserMutationsResolver');
 const {
-  findLinkById,
-  findLinksByIds,
   findLinksByFilters,
   getTotalLinkCountsByFilters,
   getNextLinkPresenceStatus,
@@ -25,7 +23,7 @@ const resolvers = {
       const { id, type } = input;
 
       const {
-        loaders: { loadUserById, loadFolderById },
+        loaders: { loadUserById, loadFolderById, loadLinkById },
       } = context;
 
       let data = {};
@@ -42,7 +40,7 @@ const resolvers = {
         }
 
         case 'LINK': {
-          data = await findLinkById({ id });
+          data = await loadLinkById.load(id);
           break;
         }
       }
@@ -54,7 +52,7 @@ const resolvers = {
       } = args;
 
       const {
-        loaders: { loadUserById, loadFolderById },
+        loaders: { loadUserById, loadFolderById, loadLinkById },
       } = context;
 
       let data = [];
@@ -66,7 +64,7 @@ const resolvers = {
         }
 
         case 'LINK': {
-          data = await findLinksByIds({ ids });
+          data = await loadLinkById.loadMany(ids);
           break;
         }
 

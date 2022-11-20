@@ -81,6 +81,9 @@ const deleteLinksByFolderId = async ({ folderId }) => {
   await deleteMultipleLinks({ folderId });
 };
 
+/**
+ * @deprecated
+ */
 const findLinkById = async ({ id }) => {
   const [link] = await findMultipleLinks({ _id: id });
   return link;
