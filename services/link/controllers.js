@@ -99,7 +99,7 @@ const findLinksByFilters = async ({ folderId, filters }) => {
 
   return await findMultipleLinksForPagination(
     paginationFilters,
-    '*',
+    '_id',
     { _id: 'desc' },
     filters.first
   );

@@ -123,12 +123,19 @@ const resolvers = {
   },
   Folder: {
     id: ({ _id }) => _id,
-    links: async (parent, args) => {
+    links: async (parent, args, context) => {
+      const {
+        loaders: { loadLinkById },
+      } = context;
+
       const id = parent._id;
-      return await findLinksByFilters({
+
+      const links = await findLinksByFilters({
         folderId: id,
         filters: args?.input ?? {},
       });
+      const linkIds = _map(links, ({ _id }) => _id);
+      return await loadLinkById.loadMany(linkIds);
     },
     linksV2: async (parent, args) => {
       const folderId = parent._id;
