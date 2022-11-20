@@ -19,6 +19,9 @@ const findMultipleFoldersByUserId = async ({ userId }) => {
   return await findMultipleFolders({ userId });
 };
 
+/**
+ * @deprecated
+ */
 const findFolderById = async ({ id }) => {
   const [folder] = await findMultipleFolders({ _id: id });
   return folder;

@@ -11,10 +11,6 @@ const FolderMutations = require('./FolderMutationsResolver');
 const LinkMutations = require('./LinkMutationsResolver');
 const UserMutations = require('./UserMutationsResolver');
 const {
-  findFolderById,
-  findMultipleFoldersById,
-} = require('../services/folder/controllers');
-const {
   findLinkById,
   findLinksByIds,
   findLinksByFilters,
@@ -29,7 +25,7 @@ const resolvers = {
       const { id, type } = input;
 
       const {
-        loaders: { loadUserById },
+        loaders: { loadUserById, loadFolderById },
       } = context;
 
       let data = {};
@@ -41,7 +37,7 @@ const resolvers = {
         }
 
         case 'FOLDER': {
-          data = await findFolderById({ id });
+          data = await loadFolderById.load(id);
           break;
         }
 
@@ -58,14 +54,14 @@ const resolvers = {
       } = args;
 
       const {
-        loaders: { loadUserById },
+        loaders: { loadUserById, loadFolderById },
       } = context;
 
       let data = [];
 
       switch (type) {
         case 'FOLDER': {
-          data = await findMultipleFoldersById({ ids });
+          data = await loadFolderById.loadMany(ids);
           break;
         }
 
