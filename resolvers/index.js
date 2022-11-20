@@ -135,10 +135,16 @@ const resolvers = {
       const linkIds = _map(links, ({ _id }) => _id);
       return await loadLinkById.loadMany(linkIds);
     },
-    linksV2: async (parent, args) => {
+    linksV2: async (parent, args, context) => {
+      const {
+        loaders: { loadLinkById },
+      } = context;
+
       const folderId = parent._id;
       const filters = args?.input ?? {};
-      const edges = await findLinksByFilters({ folderId, filters });
+      const links = await findLinksByFilters({ folderId, filters });
+      const linkIds = _map(links, ({ _id }) => _id);
+      const edges = await loadLinkById.loadMany(linkIds);
 
       return { folderId, edges, filters };
     },
