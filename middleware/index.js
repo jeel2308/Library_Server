@@ -1,4 +1,10 @@
 const verifyToken = require('./verifyToken');
 const globalErrorHandler = require('./globalErrorHandler');
 const setCsp = require('./setCsp');
-module.exports = { verifyToken, globalErrorHandler, setCsp };
+const setupTokenInResponse = require('./setupTokenInResponse');
+module.exports = {
+  verifyToken,
+  globalErrorHandler,
+  setCsp,
+  setupTokenInResponse,
+};

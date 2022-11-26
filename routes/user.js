@@ -6,15 +6,16 @@ const {
   resetPassword,
   changePassword,
 } = require('../services/auth/controllers');
+const { setupTokenInResponse } = require('../middleware');
 
 const router = Router();
 
-router.post('/signup', signup);
+router.post('/signup', signup, setupTokenInResponse);
 
-router.post('/login', signin);
+router.post('/login', signin, setupTokenInResponse);
 
 router.post('/reset-password', resetPassword);
 
-router.post('/change-password', changePassword);
+router.post('/change-password', changePassword, setupTokenInResponse);
 
 module.exports = router;

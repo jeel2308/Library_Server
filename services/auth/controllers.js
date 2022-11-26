@@ -5,7 +5,7 @@ const _isEmpty = require('lodash/isEmpty');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
-const { generateJwt, generatePassword } = require('../../utils');
+const { generatePassword } = require('../../utils');
 const {
   addUser,
   findOneAndUpdateUser,
@@ -29,15 +29,8 @@ const signup = async (req, res, next) => {
       email,
       password: bcrypt.hashSync(password, 8),
     });
-
-    const jwt = generateJwt({ user });
-
-    res.status(200).send({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      token: jwt,
-    });
+    req.user = user;
+    next();
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
@@ -73,17 +66,8 @@ const localSignIn = async (req, res, next) => {
     return;
   }
 
-  /**
-   * Token expiration is removed for simplicity. Add it later
-   */
-  const token = generateJwt({ user });
-
-  res.status(200).send({
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    token,
-  });
+  req.user = user;
+  next();
 };
 
 const googleSignIn = async (req, res, next) => {
@@ -100,14 +84,9 @@ const googleSignIn = async (req, res, next) => {
     if (_isEmpty(user)) {
       user = addUser({ name, email });
     }
-    const token = generateJwt({ user });
 
-    res.status(200).send({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
-    });
+    req.user = user;
+    next();
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
@@ -124,14 +103,9 @@ const microsoftSignIn = async (req, res, next) => {
     if (_isEmpty(user)) {
       user = addUser({ name, email });
     }
-    const token = generateJwt({ user });
 
-    res.status(200).send({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
-    });
+    req.user = user;
+    next();
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
@@ -211,14 +185,8 @@ const changePassword = async (req, res, next) => {
       { new: true }
     );
 
-    const token = generateJwt({ user: updatedUser });
-
-    res.status(200).send({
-      id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      token,
-    });
+    req.user = updatedUser;
+    next();
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
