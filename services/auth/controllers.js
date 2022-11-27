@@ -210,6 +210,7 @@ const changePassword = async (req, res, next) => {
 };
 
 const refreshOldToken = async (req, res, next) => {
+  const { REFRESH_TOKEN_JWT_SECRET } = process.env;
   try {
     const oldRefreshToken = _last(
       _split(_get(req.cookies, 'Refresh token'), ' ')
@@ -218,9 +219,11 @@ const refreshOldToken = async (req, res, next) => {
       next({ statusCode: 500, message: 'Refresh token is missing' });
       return;
     }
-    const userId = findUserByRefreshToken({ refreshToken: oldRefreshToken });
+    const userId = await findUserByRefreshToken({
+      refreshToken: oldRefreshToken,
+    });
     if (_isEmpty(userId)) {
-      const hackedUser = jwt.verify(oldRefreshToken);
+      const hackedUser = jwt.verify(oldRefreshToken, REFRESH_TOKEN_JWT_SECRET);
       await deleteAllRefreshTokensOfUser({ userId: hackedUser.id });
       next({ statusCode: 403, message: 'Unauthorized' });
       return;
