@@ -10,6 +10,8 @@ const {
   addUser,
   findOneAndUpdateUser,
   findMultipleUsers,
+  addRefreshToken,
+  deleteRefreshTokens,
 } = require('./queries');
 const { sendMailV2 } = require('../emailGenerator');
 
@@ -210,6 +212,18 @@ const updateUserById = async ({ id, ...otherUpdates }) => {
   return await findOneAndUpdateUser({ _id: id }, otherUpdates, { new: true });
 };
 
+const addRefreshTokenForUser = async ({ refreshToken, userId }) => {
+  return await addRefreshToken({ refreshToken, userId });
+};
+
+const deleteRefreshToken = async ({ refreshToken }) => {
+  return await deleteRefreshTokens({ refreshToken });
+};
+
+const deleteAllRefreshTokensOfUser = async ({ userId }) => {
+  return await deleteRefreshTokens({ userId });
+};
+
 module.exports = {
   signin,
   signup,
@@ -219,4 +233,7 @@ module.exports = {
   findUserById,
   findUserByEmail,
   updateUserById,
+  addRefreshTokenForUser,
+  deleteRefreshToken,
+  deleteAllRefreshTokensOfUser,
 };
