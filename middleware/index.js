@@ -4,6 +4,7 @@ const setCsp = require('./setCsp');
 const {
   setupTokenInResponse,
   setupTokenInResponseOfSignup,
+  setupTokenInResponseOfLogin,
 } = require('./setupTokenInResponse');
 module.exports = {
   verifyToken,
@@ -11,4 +12,5 @@ module.exports = {
   setCsp,
   setupTokenInResponse,
   setupTokenInResponseOfSignup,
+  setupTokenInResponseOfLogin,
 };
