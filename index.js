@@ -6,6 +6,7 @@ const express = require('express');
 const http = require('http');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 /**--relative-- */
 const { resolvers } = require('./resolvers');
@@ -25,6 +26,11 @@ initMailTransporter();
  * This will set Content-Security-Policy for each request
  */
 app.use(setCsp);
+
+/**
+ * This will expose cookies on req.cookies
+ */
+app.use(cookieParser());
 
 /**
  * This will allow request from only specific origins
