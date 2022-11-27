@@ -67,16 +67,15 @@ const setupTokenInResponseOfSignup = async (req, res, next) => {
   }
 };
 
-const setupTokenInResponseOfLogin = async (req, res, next) => {
+const setupTokenInResponse = async (req, res, next) => {
   const user = req.user;
 
   const { REFRESH_TOKEN_EXPIRATION_DURATION } = process.env;
-
-  const oldRefreshToken = _last(
-    _split(_get(req.cookies, 'Refresh token'), ' ')
-  );
-
   try {
+    const oldRefreshToken = _last(
+      _split(_get(req.cookies, 'Refresh token'), ' ')
+    );
+
     if (!_isEmpty(oldRefreshToken)) {
       await deleteRefreshToken({ refreshToken: oldRefreshToken });
     }
@@ -105,35 +104,7 @@ const setupTokenInResponseOfLogin = async (req, res, next) => {
   }
 };
 
-const setupTokenInResponse = (req, res, next) => {
-  const user = req.user;
-  const { REFRESH_TOKEN_EXPIRATION_DURATION } = process.env;
-  try {
-    const { refreshToken, accessToken } = _generateAccessAndRefreshToken({
-      user,
-    });
-
-    const timeInSeconds = convertTimeStringInSeconds({
-      time: REFRESH_TOKEN_EXPIRATION_DURATION,
-    });
-
-    res.cookie('Refresh token', 'Bearer ' + refreshToken, {
-      maxAge: timeInSeconds * 1000,
-      httpOnly: true,
-    });
-    res.status(200).send({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      token: accessToken,
-    });
-  } catch (e) {
-    next({ statusCode: 500, message: e.message });
-  }
-};
-
 module.exports = {
   setupTokenInResponse,
   setupTokenInResponseOfSignup,
-  setupTokenInResponseOfLogin,
 };
