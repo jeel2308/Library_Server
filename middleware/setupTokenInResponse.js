@@ -55,6 +55,7 @@ const setupTokenInResponseOfSignup = async (req, res, next) => {
     res.cookie('Refresh token', 'Bearer ' + refreshToken, {
       maxAge: timeInSeconds * 1000,
       httpOnly: true,
+      secure: true,
     });
     res.status(200).send({
       id: user._id,
@@ -92,6 +93,7 @@ const setupTokenInResponse = async (req, res, next) => {
     res.cookie('Refresh token', 'Bearer ' + refreshToken, {
       maxAge: timeInSeconds * 1000,
       httpOnly: true,
+      secure: true,
     });
     res.status(200).send({
       id: user._id,
