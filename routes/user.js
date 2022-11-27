@@ -1,8 +1,6 @@
 /**--external-- */
 const { Router } = require('express');
 const _get = require('lodash/get');
-const _split = require('lodash/split');
-const _last = require('lodash/last');
 
 const {
   signin,
@@ -31,9 +29,7 @@ router.post('/change-password', changePassword, setupTokenInResponse);
 router.post('/refresh-old-token', refreshOldToken, setupTokenInResponse);
 
 router.get('/logout', verifyToken, async (req, res) => {
-  const oldRefreshToken = _last(
-    _split(_get(req.cookies, 'Refresh token'), ' ')
-  );
+  const oldRefreshToken = _get(req.cookies, 'Refresh token');
   await deleteRefreshToken({
     refreshToken: oldRefreshToken,
     userId: req.user._id,

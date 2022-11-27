@@ -1,8 +1,6 @@
 /**--external-- */
 const jwt = require('jsonwebtoken');
 const _get = require('lodash/get');
-const _split = require('lodash/split');
-const _last = require('lodash/last');
 const _isEmpty = require('lodash/isEmpty');
 
 /**--relative-- */
@@ -52,7 +50,7 @@ const setupTokenInResponseOfSignup = async (req, res, next) => {
       time: REFRESH_TOKEN_EXPIRATION_DURATION,
     });
 
-    res.cookie('Refresh token', 'Bearer ' + refreshToken, {
+    res.cookie('Refresh token', refreshToken, {
       maxAge: timeInSeconds * 1000,
       httpOnly: true,
       secure: true,
@@ -73,9 +71,7 @@ const setupTokenInResponse = async (req, res, next) => {
 
   const { REFRESH_TOKEN_EXPIRATION_DURATION } = process.env;
   try {
-    const oldRefreshToken = _last(
-      _split(_get(req.cookies, 'Refresh token'), ' ')
-    );
+    const oldRefreshToken = _get(req.cookies, 'Refresh token');
 
     if (!_isEmpty(oldRefreshToken)) {
       await deleteRefreshToken({
@@ -93,7 +89,11 @@ const setupTokenInResponse = async (req, res, next) => {
       time: REFRESH_TOKEN_EXPIRATION_DURATION,
     });
 
-    res.cookie('Refresh token', 'Bearer ' + refreshToken, {
+    /**
+     * Bearer prefix is not included as " "(space) is converted to %20.
+     * So, it is making extracting token difficult.
+     */
+    res.cookie('Refresh token', refreshToken, {
       maxAge: timeInSeconds * 1000,
       httpOnly: true,
       secure: true,

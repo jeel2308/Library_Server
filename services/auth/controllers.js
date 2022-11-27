@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
 const _get = require('lodash/get');
-const _split = require('lodash/split');
-const _last = require('lodash/last');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
@@ -212,9 +210,8 @@ const changePassword = async (req, res, next) => {
 const refreshOldToken = async (req, res, next) => {
   const { REFRESH_TOKEN_JWT_SECRET } = process.env;
   try {
-    const oldRefreshToken = _last(
-      _split(_get(req.cookies, 'Refresh token'), ' ')
-    );
+    const oldRefreshToken = _get(req.cookies, 'Refresh token');
+
     if (_isEmpty(oldRefreshToken)) {
       next({ statusCode: 500, message: 'Refresh token is missing' });
       return;
