@@ -255,8 +255,8 @@ const addRefreshTokenForUser = async ({ refreshToken, userId }) => {
   return await addRefreshToken({ refreshToken, userId });
 };
 
-const deleteRefreshToken = async ({ refreshToken }) => {
-  return await deleteRefreshTokens({ refreshToken });
+const deleteRefreshToken = async ({ refreshToken, userId }) => {
+  return await deleteRefreshTokens({ refreshToken, userId });
 };
 
 const deleteAllRefreshTokensOfUser = async ({ userId }) => {

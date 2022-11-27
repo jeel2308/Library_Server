@@ -78,7 +78,10 @@ const setupTokenInResponse = async (req, res, next) => {
     );
 
     if (!_isEmpty(oldRefreshToken)) {
-      await deleteRefreshToken({ refreshToken: oldRefreshToken });
+      await deleteRefreshToken({
+        refreshToken: oldRefreshToken,
+        userId: user._id,
+      });
     }
 
     const { refreshToken, accessToken } = _generateAccessAndRefreshToken({
