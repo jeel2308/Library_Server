@@ -28,6 +28,17 @@ const addRefreshToken = async ({ refreshToken, userId }) => {
 
 /**
  *
+ * @param {Object} filter mongoose filter
+ * @param {Object} projection mongoose projection
+ * @returns Object refreshToken with corresponding user
+ */
+const findRefreshToken = async (filter, projection) => {
+  const params = _isEmpty(projection) ? [filter] : [filter, projection];
+  return await RefreshToken.find(...params).lean();
+};
+
+/**
+ *
  * @param {Object} filter mongosse filter
  */
 const deleteRefreshTokens = async (filter) => {
@@ -40,4 +51,5 @@ module.exports = {
   findOneAndUpdateUser,
   addRefreshToken,
   deleteRefreshTokens,
+  findRefreshToken,
 };

@@ -2,6 +2,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
+const _get = require('lodash/get');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
@@ -12,6 +13,7 @@ const {
   findMultipleUsers,
   addRefreshToken,
   deleteRefreshTokens,
+  findRefreshToken,
 } = require('./queries');
 const { sendMailV2 } = require('../emailGenerator');
 
@@ -224,6 +226,11 @@ const deleteAllRefreshTokensOfUser = async ({ userId }) => {
   return await deleteRefreshTokens({ userId });
 };
 
+const findUserByRefreshToken = async ({ refreshToken }) => {
+  const response = await findRefreshToken({ refreshToken });
+  return _get(response, '[0].userId');
+};
+
 module.exports = {
   signin,
   signup,
@@ -236,4 +243,5 @@ module.exports = {
   addRefreshTokenForUser,
   deleteRefreshToken,
   deleteAllRefreshTokensOfUser,
+  findUserByRefreshToken,
 };
