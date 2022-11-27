@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _isEmpty = require('lodash/isEmpty');
 const _get = require('lodash/get');
+const _split = require('lodash/split');
+const _last = require('lodash/last');
 const { OAuth2Client } = require('google-auth-library');
 
 /**--relative-- */
@@ -207,6 +209,30 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+const refreshOldToken = async (req, res, next) => {
+  try {
+    const oldRefreshToken = _last(
+      _split(_get(req.cookies, 'Refresh token'), ' ')
+    );
+    if (_isEmpty(oldRefreshToken)) {
+      next({ statusCode: 500, message: 'Refresh token is missing' });
+      return;
+    }
+    const userId = findUserByRefreshToken({ refreshToken: oldRefreshToken });
+    if (_isEmpty(userId)) {
+      const hackedUser = jwt.verify(oldRefreshToken);
+      await deleteAllRefreshTokensOfUser({ userId: hackedUser.id });
+      next({ statusCode: 403, message: 'Unauthorized' });
+      return;
+    }
+    const user = await findUserById({ id: userId });
+    req.user = user;
+    next();
+  } catch (e) {
+    next({ statusCode: 500, message: e.message });
+  }
+};
+
 const findMultipleUsersById = async ({ ids }) => {
   return await findMultipleUsers({ _id: { $in: ids } });
 };
@@ -255,4 +281,5 @@ module.exports = {
   deleteRefreshToken,
   deleteAllRefreshTokensOfUser,
   findUserByRefreshToken,
+  refreshOldToken,
 };
