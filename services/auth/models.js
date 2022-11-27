@@ -25,6 +25,10 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  hasLoggedInWithTemporaryPassword: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const RefreshTokenSchema = new Schema({

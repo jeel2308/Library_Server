@@ -43,35 +43,39 @@ const signup = async (req, res, next) => {
 const localSignIn = async (req, res, next) => {
   const { email, password } = req.body;
 
-  let user = undefined;
-
   try {
-    user = await findUserByEmail({ email });
+    const user = await findUserByEmail({ email });
+
+    if (!user) {
+      return next({ statusCode: 404, message: 'User does not exist' });
+    }
+
+    const isValidPassword = bcrypt.compareSync(password, user.password);
+
+    if (!isValidPassword) {
+      return next({ statusCode: 500, message: 'Incorrect password' });
+    }
+
+    if (user.showResetPasswordFlow) {
+      await findOneAndUpdateUser(
+        { _id: user._id },
+        {
+          hasLoggedInWithTemporaryPassword: true,
+        }
+      );
+      res.status(200).send({
+        id: user._id,
+        showResetPasswordFlow: user.showResetPasswordFlow,
+      });
+
+      return;
+    }
+
+    req.user = user;
+    next();
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
-
-  if (!user) {
-    return next({ statusCode: 404, message: 'User does not exist' });
-  }
-
-  const isValidPassword = bcrypt.compareSync(password, user.password);
-
-  if (!isValidPassword) {
-    return next({ statusCode: 500, message: 'Incorrect password' });
-  }
-
-  if (user.showResetPasswordFlow) {
-    res.status(200).send({
-      id: user._id,
-      showResetPasswordFlow: user.showResetPasswordFlow,
-    });
-
-    return;
-  }
-
-  req.user = user;
-  next();
 };
 
 const googleSignIn = async (req, res, next) => {
@@ -181,16 +185,23 @@ const changePassword = async (req, res, next) => {
       return next({ statusCode: 404, message: 'User does not exist!' });
     }
 
-    const encryptedPassword = bcrypt.hashSync(password, 8);
+    if (user.showResetPasswordFlow && user.hasLoggedInWithTemporaryPassword) {
+      const encryptedPassword = bcrypt.hashSync(password, 8);
+      const updatedUser = await findOneAndUpdateUser(
+        { _id: userId },
+        {
+          password: encryptedPassword,
+          showResetPasswordFlow: false,
+          hasLoggedInWithTemporaryPassword: false,
+        },
+        { new: true }
+      );
 
-    const updatedUser = await findOneAndUpdateUser(
-      { _id: userId },
-      { password: encryptedPassword, showResetPasswordFlow: false },
-      { new: true }
-    );
-
-    req.user = updatedUser;
-    next();
+      req.user = updatedUser;
+      next();
+    } else {
+      next({ statusCode: 403, message: 'Unauthenticated request' });
+    }
   } catch (e) {
     return next({ statusCode: 500, message: e.message });
   }
