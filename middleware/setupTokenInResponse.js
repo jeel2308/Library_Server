@@ -54,6 +54,7 @@ const setupTokenInResponseOfSignup = async (req, res, next) => {
       maxAge: timeInSeconds * 1000,
       httpOnly: true,
       secure: true,
+      sameSite: 'None',
     });
     res.status(200).send({
       id: user._id,
@@ -95,8 +96,9 @@ const setupTokenInResponse = async (req, res, next) => {
      */
     res.cookie('Refresh token', refreshToken, {
       maxAge: timeInSeconds * 1000,
-      httpOnly: true,
-      secure: true,
+      httpOnly: true, //To make cookies available in https and localhost environment only
+      secure: true, //To prevent access from js
+      sameSite: 'None', //To pass cookies in cross origin requests. Setting sameSite:none also requires secure:true
     });
     res.status(200).send({
       id: user._id,

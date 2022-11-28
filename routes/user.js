@@ -34,7 +34,11 @@ router.get('/logout', verifyToken, async (req, res) => {
     refreshToken: oldRefreshToken,
     userId: req.user._id,
   });
-  res.clearCookie('Refresh token', { httpOnly: true, secure: true });
+  res.clearCookie('Refresh token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+  });
   res.status(200).send({ message: 'Successfully logged out' });
 });
 

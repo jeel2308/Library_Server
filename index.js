@@ -48,6 +48,7 @@ const corsOptions = {
       callback({ message: 'Not allowed by CORS', statusCode: 403 });
     }
   },
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
