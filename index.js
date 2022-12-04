@@ -45,7 +45,7 @@ const corsOptions = {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback({ message: 'Not allowed by CORS', statusCode: 403 });
+      callback({ message: 'Not allowed by CORS', statusCode: 500 });
     }
   },
   credentials: true,

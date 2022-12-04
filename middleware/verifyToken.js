@@ -21,7 +21,7 @@ const verifyToken = async (req, res, next) => {
     try {
       decodedUser = jwt.verify(token, JWT_SECRET);
     } catch (e) {
-      return next({ statusCode: 403, message: e.message || 'Invalid token' });
+      return next({ statusCode: 500, message: e.message || 'Invalid token' });
     }
 
     let user = undefined;

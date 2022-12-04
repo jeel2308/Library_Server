@@ -3,7 +3,7 @@ const globalErrorHandler = (err, req, res, next) => {
     return next(err);
   }
 
-  const { statusCode, message } = err;
+  const { statusCode = 500, message } = err;
   res.status(statusCode).send({ message });
 };
 

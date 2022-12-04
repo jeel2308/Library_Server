@@ -25,7 +25,7 @@ const signup = async (req, res, next) => {
   try {
     const oldUser = await findUserByEmail({ email });
     if (oldUser) {
-      return next({ statusCode: 500, message: 'User already exists!!' });
+      return next({ statusCode: 403, message: 'User already exists!!' });
     }
 
     const user = await addUser({
@@ -222,7 +222,7 @@ const refreshOldToken = async (req, res, next) => {
     if (_isEmpty(userId)) {
       const hackedUser = jwt.verify(oldRefreshToken, REFRESH_TOKEN_JWT_SECRET);
       await deleteAllRefreshTokensOfUser({ userId: hackedUser.id });
-      next({ statusCode: 403, message: 'Unauthorized' });
+      next({ statusCode: 403, message: 'Unauthenticated request' });
       return;
     }
     const user = await findUserById({ id: userId });
