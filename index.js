@@ -121,7 +121,7 @@ const startServer = async () => {
      */
     server.applyMiddleware({ app });
 
-    await httpServer.listen({ port: 4000 });
+    await httpServer.listen({ port: process.env.PORT });
     console.log('Express server started');
   } catch (e) {
     console.log(e);
