@@ -1,20 +1,18 @@
 /**--external-- */
-const { ApolloServer } = require('apollo-server-express');
-const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const dotEnv = require('dotenv');
 const express = require('express');
 const http = require('http');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 /**--relative-- */
-const { resolvers } = require('./resolvers');
-const { typeDefs } = require('./schema');
 const initMailTransporter = require('./mailTransporters');
-const buildDataLoaders = require('./dataloaders');
 const { userRoutes, pingRoutes, cspRoutes } = require('./routes');
 const { verifyToken, globalErrorHandler, setCsp } = require('./middleware');
+const {
+  getApolloServer,
+  getMongoConnectionPromise,
+} = require('./serverDependencies');
 
 const app = express();
 
@@ -80,56 +78,17 @@ app.use(verifyToken);
 
 app.use(globalErrorHandler);
 
-const setupMongoDb = async () => {
-  const { PASSWORD, DB } = process.env;
-  const DB_URL = `mongodb+srv://Jeel2308:${PASSWORD}@cluster0.erkx1.mongodb.net/${DB}?retryWrites=true&w=majority`;
+const startLocalServer = async ({ httpServer, app }) => {
+  await getMongoConnectionPromise();
+  console.log('MongoDB connected');
 
-  try {
-    await mongoose.connect(DB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
-    console.log('Mongodb connected');
-  } catch (e) {
-    throw new Error('Mongoose connection error: ' + e.message);
-  }
-};
-
-const setupApolloServer = async ({ httpServer, app }) => {
-  try {
-    const server = new ApolloServer({
-      typeDefs,
-      resolvers,
-      context: ({ req }) => {
-        return {
-          user: req.user,
-          loaders: buildDataLoaders(),
-        };
-      },
-      plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    });
-
-    await server.start();
-
-    /**
-     * Internally, it registers route middleware for /graphql route on app.
-     */
-    server.applyMiddleware({ app });
-
-    console.log('Apollo server started');
-  } catch (e) {
-    throw new Error('Apollo Server connection error: ' + e.message);
-  }
-};
-
-const startServer = async ({ httpServer }) => {
-  try {
-    await httpServer.listen({ port: process.env.PORT });
-    console.log('Express server started');
-  } catch (e) {
-    throw new Error('Express server error: ' + e.message);
-  }
+  const apolloServer = getApolloServer({ httpServer });
+  await apolloServer.start();
+  /**
+   * Internally, it registers route middleware for /graphql route on app.
+   */
+  apolloServer.applyMiddleware({ app });
+  console.log('Apollo Server started');
 };
 
 /**
@@ -140,12 +99,8 @@ const startServer = async ({ httpServer }) => {
  */
 const httpServer = http.createServer(app);
 
-setupMongoDb();
-
-setupApolloServer({ httpServer, app });
-
 if (process.env.NODE_ENV === 'LOCAL' && !process.env.NETLIFY_DEV) {
-  startServer({ httpServer });
+  startLocalServer({ httpServer, app });
 }
 
-module.exports = { httpServer };
+module.exports = { httpServer, app };
