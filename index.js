@@ -39,10 +39,11 @@ const whitelist = [
   'http://localhost:3000',
   'https://resource-library.netlify.app',
   'https://studio.apollographql.com',
+  'http://localhost:8888',
 ];
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback({ message: 'Not allowed by CORS', statusCode: 500 });
@@ -143,6 +144,8 @@ setupMongoDb();
 
 setupApolloServer({ httpServer, app });
 
-startServer({ httpServer });
+if (process.env.NODE_ENV === 'LOCAL' && !process.env.NETLIFY_DEV) {
+  startServer({ httpServer });
+}
 
 module.exports = { httpServer };

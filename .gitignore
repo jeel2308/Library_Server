@@ -96,3 +96,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows
+# Local Netlify folder
+.netlify
