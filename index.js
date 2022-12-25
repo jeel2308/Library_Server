@@ -146,4 +146,4 @@ setupApolloServer({ httpServer, app });
 
 startServer({ httpServer });
 
-module.exports.handler = serverless(httpServer);
+module.exports = serverless(httpServer);
