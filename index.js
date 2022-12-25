@@ -7,7 +7,6 @@ const http = require('http');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const serverless = require('serverless-http');
 
 /**--relative-- */
 const { resolvers } = require('./resolvers');
@@ -146,4 +145,4 @@ setupApolloServer({ httpServer, app });
 
 startServer({ httpServer });
 
-module.exports = serverless(httpServer);
+module.exports = { httpServer };
