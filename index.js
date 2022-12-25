@@ -89,6 +89,9 @@ const startLocalServer = async ({ httpServer, app }) => {
    */
   apolloServer.applyMiddleware({ app });
   console.log('Apollo Server started');
+
+  await httpServer.listen({ port: process.env.PORT });
+  console.log('Express server started');
 };
 
 /**
