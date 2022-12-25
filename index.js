@@ -79,19 +79,10 @@ app.use(verifyToken);
 
 app.use(globalErrorHandler);
 
-/**
- * Instead of using app.listen, we are creating httpServer. httpServer requires a function which
- * handles req and res. Here we are using app for that purpose.
- * So, when request arrives control will flow in this way:
- * httpServer -> app -> middleware ->apollo server
- */
-const httpServer = http.createServer(app);
+const setupMongoDb = async () => {
+  const { PASSWORD, DB } = process.env;
+  const DB_URL = `mongodb+srv://Jeel2308:${PASSWORD}@cluster0.erkx1.mongodb.net/${DB}?retryWrites=true&w=majority`;
 
-const { PASSWORD, DB } = process.env;
-
-const DB_URL = `mongodb+srv://Jeel2308:${PASSWORD}@cluster0.erkx1.mongodb.net/${DB}?retryWrites=true&w=majority`;
-
-const startServer = async () => {
   try {
     await mongoose.connect(DB_URL, {
       useNewUrlParser: true,
@@ -99,7 +90,13 @@ const startServer = async () => {
     });
 
     console.log('Mongodb connected');
+  } catch (e) {
+    throw new Error('Mongoose connection error: ' + e.message);
+  }
+};
 
+const setupApolloServer = async ({ httpServer, app }) => {
+  try {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
@@ -114,18 +111,36 @@ const startServer = async () => {
 
     await server.start();
 
-    console.log('Apollo server started');
-
     /**
      * Internally, it registers route middleware for /graphql route on app.
      */
     server.applyMiddleware({ app });
 
-    await httpServer.listen({ port: process.env.PORT });
-    console.log('Express server started');
+    console.log('Apollo server started');
   } catch (e) {
-    console.log(e);
+    throw new Error('Apollo Server connection error: ' + e.message);
   }
 };
 
-startServer();
+const startServer = async ({ httpServer }) => {
+  try {
+    await httpServer.listen({ port: process.env.PORT });
+    console.log('Express server started');
+  } catch (e) {
+    throw new Error('Express server error: ' + e.message);
+  }
+};
+
+/**
+ * Instead of using app.listen, we are creating httpServer. httpServer requires a function which
+ * handles req and res. Here we are using app for that purpose.
+ * So, when request arrives control will flow in this way:
+ * httpServer -> app -> middleware ->apollo server
+ */
+const httpServer = http.createServer(app);
+
+setupMongoDb();
+
+setupApolloServer({ httpServer, app });
+
+startServer({ httpServer });
