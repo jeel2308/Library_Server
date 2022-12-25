@@ -31,7 +31,8 @@
     "mongodb": "^4.3.0",
     "mongoose": "^6.1.5",
     "node-fetch": "2",
-    "nodemailer": "^6.7.3"
+    "nodemailer": "^6.7.3",
+    "serverless-http": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^8.24.0",
